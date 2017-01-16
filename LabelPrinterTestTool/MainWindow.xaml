@@ -4,9 +4,47 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LabelPrinterTestTool"
+        xmlns:self="clr-namespace:LabelPrinterTestTool.Commands"
+
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="768">
+    <Window.CommandBindings>
+        <CommandBinding x:Uid="ConnectCommand" Command="self:CustomCommands.ConnectCommand" Executed="ConnectCommand_Executed" />
+        <CommandBinding x:Uid="SendTextCommand" Command="self:CustomCommands.SendTextCommand" Executed="SendTextCommand_Executed" />
+        <CommandBinding x:Uid="CutCommand" Command="self:CustomCommands.CutCommand" Executed="CutCommand_Executed" />
+        <CommandBinding x:Uid="FeedCommand" Command="self:CustomCommands.FeedCommand" Executed="FeedCommand_Executed" />
+    </Window.CommandBindings>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition SharedSizeGroup="Buttons"/>
+            <RowDefinition SharedSizeGroup="Buttons"/>
+            <RowDefinition SharedSizeGroup="Buttons"/>
+            <RowDefinition SharedSizeGroup="Buttons"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         
+        <Button x:Name="connectbutton" Content="Connect" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch"  Grid.Column="4" Grid.Row="0"  Command="self:CustomCommands.ConnectCommand" />
+        <TextBox x:Name="IPtextBlock" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="{Binding Path=Printer.PrinterIPAddress}" VerticalAlignment="Stretch"  Margin="10" Grid.Row="0" Grid.Column="2" />
+        <TextBox x:Name="PorttextBlock" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="{Binding Path=Printer.Port}" VerticalAlignment="Stretch"  Margin="10" Grid.Row="0" Grid.Column="3"/>
+        <Label x:Name="Connectionlabel" Content="IP Address / Port" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="0" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+
+        <Button x:Name="button" Content="Send Text" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch"  Grid.Column="4" Grid.Row="1"  Command="self:CustomCommands.SendTextCommand" />
+        <TextBox x:Name="textBlock" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="{Binding Path=TextToSend}" VerticalAlignment="Stretch"  Margin="10" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Label x:Name="label" Content="Text To Send" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="1" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+
+        <Button x:Name="Feedbutton" Content="Feed" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch"  Grid.Column="4" Grid.Row="2"  Command="self:CustomCommands.FeedCommand" />
+        <TextBox x:Name="FeedtextBlock" HorizontalAlignment="Stretch"  TextWrapping="Wrap" Text="{Binding Path=FeedCount}" VerticalAlignment="Stretch"  Margin="10" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Label x:Name="Feedlabel" Content="Feed" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="2" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+
+        <Button x:Name="Cutbutton" Content="Cut" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch"  Grid.Column="4" Grid.Row="3"  Command="self:CustomCommands.CutCommand" />
+
     </Grid>
 </Window>

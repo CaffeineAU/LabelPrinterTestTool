@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,11 +21,106 @@ namespace LabelPrinterTestTool
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+
+
+        private ThermalPrinterTCP printer = new ThermalPrinterTCP();
+
+        public ThermalPrinterTCP Printer
+        {
+            get { return printer; }
+            set
+            {
+                printer = value;
+                OnPropertyChanged("Printer");
+            }
+        }
+
+
+        private String textToSend = "";
+
+        public String TextToSend
+        {
+            get { return textToSend; }
+            set
+            {
+                textToSend = value;
+                OnPropertyChanged("TextToSend");
+            }
+        }
+
+        private Byte feedCount = 5;
+
+        public Byte FeedCount
+        {
+            get { return feedCount; }
+            set
+            {
+                feedCount = value;
+                OnPropertyChanged("FeedCount");
+            }
+        }
+
+
+
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = this;
         }
+
+        private void SendTextCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrEmpty(TextToSend);
+        }
+
+        private void SendTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+             printer.WriteAsciiString(TextToSend);
+       }
+
+
+        private void ConnectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !Printer.Connected;
+        }
+
+        private void ConnectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            printer.Connect();
+        }
+
+        private void CutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Printer.Connected;
+        }
+
+        private void CutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            printer.Cut();
+        }
+
+
+        private void FeedCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Printer.Connected;
+        }
+
+        private void FeedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            printer.Feed(FeedCount);
+        }
+
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(String name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+
     }
 }
