@@ -72,7 +72,7 @@ namespace LabelPrinterTestTool
 
         private void SendTextCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !String.IsNullOrEmpty(TextToSend);
+            e.CanExecute = !String.IsNullOrEmpty(TextToSend) && Printer.Connected;
         }
 
         private void SendTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
