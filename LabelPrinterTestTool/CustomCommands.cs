@@ -43,6 +43,17 @@ namespace LabelPrinterTestTool.Commands
                 }
         );
 
+        public static readonly RoutedUICommand ResetCommand = new RoutedUICommand
+        (
+                "ResetCommand",
+                "ResetCommand",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.R, ModifierKeys.Control)
+                }
+        );
+
         public static readonly RoutedUICommand FeedCommand = new RoutedUICommand
         (
                 "FeedCommand",

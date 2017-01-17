@@ -81,14 +81,21 @@ namespace LabelPrinterTestTool
        }
 
 
-        private void ConnectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = !Printer.Connected;
-        }
+        //private void ConnectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        //{
+        //    e.CanExecute = !Printer.Connected;
+        //}
 
         private void ConnectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            printer.Connect();
+            if (Printer.Connected)
+            {
+                Printer.Disconnect();
+            }
+            else
+            {
+                Printer.Connect();
+            }
         }
 
         private void CutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -110,6 +117,16 @@ namespace LabelPrinterTestTool
         private void FeedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             printer.Feed(FeedCount);
+        }
+
+        private void ResetCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Printer.Connected;
+        }
+
+        private void ResetCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            printer.Reset();
         }
 
 
