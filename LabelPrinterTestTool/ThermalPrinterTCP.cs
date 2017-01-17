@@ -49,29 +49,32 @@ namespace LabelPrinterTestTool
                 OnPropertyChanged("Connected");
             }
         }
+        public enum NumericOptions
+        {
+            Zero = 0x00,
+            One = 0x01,
+            Two = 0x02,
+            Three = 0x03,
+            Four = 0x04,
+            Five = 0x05,
 
-        public Dictionary<UnderlineOption, string> UnderlineOptions
+        }
+
+        public Dictionary<NumericOptions, string> UnderlineOptions
         {
             get
             {
-                return new Dictionary<UnderlineOption, string>() // Fix. Each time new dict.?
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
                 {
-                    {UnderlineOption.None, "No Underline"},
-                    {UnderlineOption.One, "1 Pixel underline"},
-                    {UnderlineOption.Two, "2 Pixel underline"},
+                    {NumericOptions.Zero, "No Underline"},
+                    {NumericOptions.One, "1 Pixel underline"},
+                    {NumericOptions.Two, "2 Pixel underline"},
                 };
             }
         }
-        public enum UnderlineOption
-        {
-            None = 0x00,
-            One = 0x01,
-            Two = 0x02,
+        private NumericOptions underlined = NumericOptions.Zero;
 
-        }
-        private UnderlineOption underlined = UnderlineOption.None;
-
-        public UnderlineOption Underlined
+        public NumericOptions Underlined
         {
             get { return underlined; }
             set
@@ -83,21 +86,96 @@ namespace LabelPrinterTestTool
             }
         }
 
-        public Dictionary<UnderlineOption, string> BlackWhiteOptions
+        public Dictionary<NumericOptions, string> RotationOptions
         {
             get
             {
-                return new Dictionary<UnderlineOption, string>() // Fix. Each time new dict.?
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
                 {
-                    {UnderlineOption.None, "Black On White"},
-                    {UnderlineOption.One, "White On Black"},
+                    {NumericOptions.Zero, "No Rotation"},
+                    {NumericOptions.One, "90° Clockwise Rotation"},
+                };
+            }
+        }
+        private NumericOptions rotated = NumericOptions.Zero;
+
+        public NumericOptions Rotated
+        {
+            get { return rotated; }
+            set
+            {
+                rotated = value;
+                WriteCommand(0x1b, 0x56, (byte)(value), null);
+                OnPropertyChanged("Rotated");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> UpsideDownOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "Right Side Up"},
+                    {NumericOptions.One, "Upside Down"},
+                };
+            }
+        }
+        private NumericOptions upsideDown = NumericOptions.Zero;
+
+        public NumericOptions UpsideDown
+        {
+            get { return upsideDown; }
+            set
+            {
+                upsideDown = value;
+                WriteCommand(0x1b, 0x7b, (byte)(value), null);
+                OnPropertyChanged("UpsideDown");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> EmphasisedOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "Not Emphasised"},
+                    {NumericOptions.One, "Emphasised"},
+                };
+            }
+        }
+        private NumericOptions emphasised = NumericOptions.Zero;
+
+        public NumericOptions Emphasised
+        {
+            get { return emphasised; }
+            set
+            {
+                emphasised = value;
+                WriteCommand(0x1b, 0x45, (byte)(value), null);
+                OnPropertyChanged("Emphasised");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> BlackWhiteOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "Black On White"},
+                    {NumericOptions.One, "White On Black"},
                 };
             }
         }
 
-        private UnderlineOption blackonwhite = UnderlineOption.None;
+        private NumericOptions blackonwhite = NumericOptions.Zero;
 
-        public UnderlineOption BlackOnWhite
+        public NumericOptions BlackOnWhite
         {
             get { return blackonwhite; }
             set
@@ -105,6 +183,32 @@ namespace LabelPrinterTestTool
                 blackonwhite = value;
                 WriteCommand(0x1D, 0x42, (byte)(value), null);
                 OnPropertyChanged("BlackOnWhite");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> DoubleStrikeOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "No Double Strike"},
+                    {NumericOptions.One, "Double Strike"},
+                };
+            }
+        }
+
+        private NumericOptions doubleStrike = NumericOptions.Zero;
+
+        public NumericOptions DoubleStrike
+        {
+            get { return doubleStrike; }
+            set
+            {
+                doubleStrike = value;
+                WriteCommand(0x1D, 0x47, (byte)(value), null);
+                OnPropertyChanged("DoubleStrike");
 
             }
         }
