@@ -83,6 +83,32 @@ namespace LabelPrinterTestTool
             }
         }
 
+        public Dictionary<UnderlineOption, string> BlackWhiteOptions
+        {
+            get
+            {
+                return new Dictionary<UnderlineOption, string>() // Fix. Each time new dict.?
+                {
+                    {UnderlineOption.None, "Black On White"},
+                    {UnderlineOption.One, "White On Black"},
+                };
+            }
+        }
+
+        private UnderlineOption blackonwhite = UnderlineOption.None;
+
+        public UnderlineOption BlackOnWhite
+        {
+            get { return blackonwhite; }
+            set
+            {
+                blackonwhite = value;
+                WriteCommand(0x1D, 0x42, (byte)(value), null);
+                OnPropertyChanged("BlackOnWhite");
+
+            }
+        }
+
         public Dictionary<byte, string> FontXMultipliers
         {
             get
