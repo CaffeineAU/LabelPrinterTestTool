@@ -207,8 +207,34 @@ namespace LabelPrinterTestTool
             set
             {
                 doubleStrike = value;
-                WriteCommand(0x1D, 0x47, (byte)(value), null);
+                WriteCommand(0x1B, 0x47, (byte)(value), null);
                 OnPropertyChanged("DoubleStrike");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> FontOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "Font A (12 x 24)"},
+                    {NumericOptions.One, "Font B (9 x 24)"},
+                };
+            }
+        }
+
+        private NumericOptions font = NumericOptions.Zero;
+
+        public NumericOptions Font
+        {
+            get { return font; }
+            set
+            {
+                font = value;
+                WriteCommand(0x1B, 0x4D, (byte)(value), null);
+                OnPropertyChanged("Font");
 
             }
         }
