@@ -38,6 +38,26 @@ namespace LabelPrinterTestTool
             }
         }
 
+        private int printPosition = 0;
+
+        public int PrintPosition
+        {
+            get { return printPosition; }
+            set
+            {
+                printPosition = value;
+                WriteCommand(0x1B, 0x24, (byte)((value & 0xFF00) / 0x100), (byte)(value & 0xFF));
+
+                OnPropertyChanged("PrintPosition");
+                OnPropertyChanged("CalculatedPrintPosition");
+            }
+        }
+
+        public double CalculatedPrintPosition
+        {
+            get { return (double)PrintPosition * 0.141; }
+        }
+
         private Boolean connected = false;
 
         public Boolean Connected

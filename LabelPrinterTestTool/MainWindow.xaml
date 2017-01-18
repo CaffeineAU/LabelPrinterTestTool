@@ -31,11 +31,11 @@
             <RowDefinition SharedSizeGroup="Buttons"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="250" SharedSizeGroup="Combos"/>
             <ColumnDefinition SharedSizeGroup="Combos"/>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="120" SharedSizeGroup="ButtonsWidth"/>
+            <ColumnDefinition  SharedSizeGroup="ButtonsWidth"/>
         </Grid.ColumnDefinitions>
 
         <Button x:Name="connectbutton" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="4" Grid.Row="0" Command="self:CustomCommands.ConnectCommand" >
@@ -66,15 +66,19 @@
         <Label x:Name="Feedlabel" Content="Feed" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="2" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
 
         <Button x:Name="Cutbutton" Content="Cut" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="4" Grid.Row="3" Command="self:CustomCommands.CutCommand" />
-        <ComboBox Name="UnderlineCombo" Grid.Column="1" Grid.Row="3" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.UnderlineOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Underlined, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
+        <TextBox x:Name="PrintPosBox" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=Printer.PrintPosition, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" Margin="10" Grid.Row="3" Grid.Column="2" IsEnabled="{Binding Path=Printer.Connected}" />
+        <Label x:Name="PrintPosLabel" Content="Print Position" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="3" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+        <Label x:Name="CalcPrintPosLabel" Content="{Binding Path=Printer.CalculatedPrintPosition}" ContentStringFormat="{}({0:0.## mm})" Grid.Column="3" HorizontalAlignment="Left" Margin="10" Grid.Row="3" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
         <ComboBox Name="FontXCombo" Grid.Column="1" Grid.Row="4" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.FontXMultipliers}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.FontXMultiplier, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="FontYCombo" Grid.Column="1" Grid.Row="5" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.FontYMultipliers}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.FontYMultiplier, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="BWCombo" Grid.Column="1" Grid.Row="6" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.BlackWhiteOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.BlackOnWhite, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
-        <ComboBox Name="EmphasisedCombo" Grid.Column="2" Grid.Row="3" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.EmphasisedOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Emphasised, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="UpsideDownCombo" Grid.Column="2" Grid.Row="4" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.UpsideDownOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.UpsideDown, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="RotationCombo" Grid.Column="2" Grid.Row="5" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.RotationOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Rotated, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="DoubleStrikeCombo" Grid.Column="2" Grid.Row="6" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.DoubleStrikeOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.DoubleStrike, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="FontCombo" Grid.Column="2" Grid.Row="7" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.FontOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Font, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
-        <Button x:Name="Resetbutton" Content="Reset" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="8" Grid.Row="8" Command="self:CustomCommands.ResetCommand" />
+        <ComboBox Name="UnderlineCombo" Grid.Column="1" Grid.Row="8" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.UnderlineOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Underlined, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
+        <ComboBox Name="EmphasisedCombo" Grid.Column="2" Grid.Row="8" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.EmphasisedOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Emphasised, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
+        <Button x:Name="Resetbutton" Content="Reset" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="8" Grid.Row="18" Command="self:CustomCommands.ResetCommand" />
+
     </Grid>
 </Window>
