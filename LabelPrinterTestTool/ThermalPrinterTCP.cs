@@ -12,6 +12,7 @@ namespace LabelPrinterTestTool
 {
     public class ThermalPrinterTCP : INotifyPropertyChanged
     {
+        //add a comment
         TcpClient printer = new TcpClient();
 
         private String m_IPAddress = "172.21.114.185";
