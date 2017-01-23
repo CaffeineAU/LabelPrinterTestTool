@@ -129,6 +129,16 @@ namespace LabelPrinterTestTool
             printer.Reset();
         }
 
+        private void PrintCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Printer.Connected && Printer.PageMode == ThermalPrinterTCP.NumericOptions.One;
+        }
+
+        private void PrintCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            printer.Print();
+        }
+
 
 
         public event PropertyChangedEventHandler PropertyChanged;

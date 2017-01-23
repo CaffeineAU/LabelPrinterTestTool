@@ -64,5 +64,15 @@ namespace LabelPrinterTestTool.Commands
                     new KeyGesture(Key.F, ModifierKeys.Control)
                 }
         );
+        public static readonly RoutedUICommand PrintCommand = new RoutedUICommand
+        (
+                "PrintCommand",
+                "PrintCommand",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.P, ModifierKeys.Control)
+                }
+        );
     }
 }

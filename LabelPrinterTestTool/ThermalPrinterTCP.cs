@@ -46,7 +46,7 @@ namespace LabelPrinterTestTool
             set
             {
                 printPosition = value;
-                WriteCommand(0x1B, 0x24, (byte)((value & 0xFF00) / 0x100), (byte)(value & 0xFF));
+                WriteCommand(0x1B, 0x24, (byte)(value & 0xFF), (byte)((value & 0xFF00) / 0x100));
 
                 OnPropertyChanged("PrintPosition");
                 OnPropertyChanged("CalculatedPrintPosition");
@@ -100,7 +100,7 @@ namespace LabelPrinterTestTool
             set
             {
                 underlined = value;
-                WriteCommand(0x1b, 0x2d, (byte)(value), null);
+                WriteCommand(0x1b, 0x2d, (byte)(value));
                 OnPropertyChanged("Underlined");
 
             }
@@ -125,7 +125,7 @@ namespace LabelPrinterTestTool
             set
             {
                 rotated = value;
-                WriteCommand(0x1b, 0x56, (byte)(value), null);
+                WriteCommand(0x1b, 0x56, (byte)(value));
                 OnPropertyChanged("Rotated");
 
             }
@@ -150,8 +150,60 @@ namespace LabelPrinterTestTool
             set
             {
                 upsideDown = value;
-                WriteCommand(0x1b, 0x7b, (byte)(value), null);
+                WriteCommand(0x1b, 0x7b, (byte)(value));
                 OnPropertyChanged("UpsideDown");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> PageModeOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "Standard Mode"},
+                    {NumericOptions.One, "PageMode"},
+                };
+            }
+        }
+        private NumericOptions pageMode = NumericOptions.Zero;
+
+        public NumericOptions PageMode
+        {
+            get { return pageMode; }
+            set
+            {
+                pageMode = value;
+                WriteCommand(0x1b, (byte)(value == NumericOptions.Zero ? 0x53 : 0x4C));
+                OnPropertyChanged("PageMode");
+
+            }
+        }
+
+        public Dictionary<NumericOptions, string> PageModePrintDirectionOptions
+        {
+            get
+            {
+                return new Dictionary<NumericOptions, string>() // Fix. Each time new dict.?
+                {
+                    {NumericOptions.Zero, "Left to right, start Upper left"},
+                    {NumericOptions.One, "Bottom to top, start Lower left"},
+                    {NumericOptions.Two, "Right to left, start Lower right"},
+                    {NumericOptions.Three, "Top to bottom, start Upper right"},
+                };
+            }
+        }
+        private NumericOptions pageModePrintDirection = NumericOptions.Zero;
+
+        public NumericOptions PageModePrintDirection
+        {
+            get { return pageModePrintDirection; }
+            set
+            {
+                pageModePrintDirection = value;
+                WriteCommand(0x1b, 0x54, (byte)(value));
+                OnPropertyChanged("PageModePrintDirection");
 
             }
         }
@@ -175,7 +227,7 @@ namespace LabelPrinterTestTool
             set
             {
                 emphasised = value;
-                WriteCommand(0x1b, 0x45, (byte)(value), null);
+                WriteCommand(0x1b, 0x45, (byte)(value));
                 OnPropertyChanged("Emphasised");
 
             }
@@ -201,7 +253,7 @@ namespace LabelPrinterTestTool
             set
             {
                 blackonwhite = value;
-                WriteCommand(0x1D, 0x42, (byte)(value), null);
+                WriteCommand(0x1D, 0x42, (byte)(value));
                 OnPropertyChanged("BlackOnWhite");
 
             }
@@ -227,7 +279,7 @@ namespace LabelPrinterTestTool
             set
             {
                 doubleStrike = value;
-                WriteCommand(0x1B, 0x47, (byte)(value), null);
+                WriteCommand(0x1B, 0x47, (byte)(value));
                 OnPropertyChanged("DoubleStrike");
 
             }
@@ -253,7 +305,7 @@ namespace LabelPrinterTestTool
             set
             {
                 font = value;
-                WriteCommand(0x1B, 0x4D, (byte)(value), null);
+                WriteCommand(0x1B, 0x4D, (byte)(value));
                 OnPropertyChanged("Font");
 
             }
@@ -284,7 +336,7 @@ namespace LabelPrinterTestTool
             set
             {
                 fontXMultiplier = value;
-                WriteCommand(0x1D, 0x21, (byte)((value * 0x10 ) + FontYMultiplier), null);
+                WriteCommand(0x1D, 0x21, (byte)((value * 0x10) + FontYMultiplier));
                 OnPropertyChanged("FontXMultiplier");
 
             }
@@ -315,7 +367,7 @@ namespace LabelPrinterTestTool
             set
             {
                 fontYMultiplier = value;
-                WriteCommand(0x1D, 0x21, (byte)((FontXMultiplier * 0x10) + value), null);
+                WriteCommand(0x1D, 0x21, (byte)((FontXMultiplier * 0x10) + value));
                 OnPropertyChanged("FontYMultiplier");
 
             }
@@ -350,12 +402,17 @@ namespace LabelPrinterTestTool
 
         public void Cut()
         {
-            printer.GetStream().Write(new byte[] { 0x1b, 0x69 }, 0, 2);
+            WriteCommand(0x1b, 0x69);
+        }
+
+        public void Print()
+        {
+            WriteCommand(0x0c);
         }
 
         public void Reset()
         {
-            printer.GetStream().Write(new byte[] { 0x1b, 0x40 }, 0, 2);
+            WriteCommand(0x1b, 0x40);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -367,24 +424,35 @@ namespace LabelPrinterTestTool
 
         public void Feed(byte lines)
         {
-            WriteCommand(0x1b, 0x64, lines, null);
+            WriteCommand(0x1b, 0x64, lines);
         }
 
 
-        private void WriteCommand(byte command, byte command2, byte n, byte? m)
+        private void WriteCommand(byte command, byte? command2 = null, byte? n = null, byte? m = null)
         {
             if (printer.Connected)
             {
-
-                if (m != null)
+                if (command2 != null)
                 {
-                    printer.GetStream().Write(new byte[] { command, command2, n, (byte)m }, 0, 4);
-
+                    if (n != null)
+                    {
+                        if (m != null)
+                        {
+                            printer.GetStream().Write(new byte[] { command, (byte)command2, (byte)n, (byte)m }, 0, 4);
+                        }
+                        else
+                        {
+                            printer.GetStream().Write(new byte[] { command, (byte)command2, (byte)n }, 0, 3);
+                        }
+                    }
+                    else
+                    {
+                        printer.GetStream().Write(new byte[] { command, (byte)command2 }, 0, 2);
+                    }
                 }
                 else
                 {
-                    printer.GetStream().Write(new byte[] { command, command2, n }, 0, 3);
-
+                    printer.GetStream().Write(new byte[] { command }, 0, 1);
                 }
             }
         }
