@@ -139,6 +139,16 @@ namespace LabelPrinterTestTool
             printer.Print();
         }
 
+        private void FindCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !Printer.Connected;
+        }
+
+        private void FindCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Printer.FindPrinter();
+        }
+
 
 
         public event PropertyChangedEventHandler PropertyChanged;

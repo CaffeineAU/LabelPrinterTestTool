@@ -15,6 +15,7 @@
         <CommandBinding x:Uid="PrintCommand" Command="self:CustomCommands.PrintCommand" Executed="PrintCommand_Executed" CanExecute="PrintCommand_CanExecute" />
         <CommandBinding x:Uid="ResetCommand" Command="self:CustomCommands.ResetCommand" Executed="ResetCommand_Executed" CanExecute="ResetCommand_CanExecute" />
         <CommandBinding x:Uid="FeedCommand" Command="self:CustomCommands.FeedCommand" Executed="FeedCommand_Executed" CanExecute="FeedCommand_CanExecute"/>
+        <CommandBinding x:Uid="FindCommand" Command="self:CustomCommands.FindCommand" Executed="FindCommand_Executed" CanExecute="FindCommand_CanExecute"/>
     </Window.CommandBindings>
     <Grid Grid.IsSharedSizeScope="True">
         <Grid.RowDefinitions>
@@ -103,6 +104,7 @@
         <ComboBox Name="EmphasisedCombo" Grid.Column="2" Grid.Row="8" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.EmphasisedOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Emphasised, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
         <ComboBox Name="FontCombo" Grid.Column="2" Grid.Row="9" Margin="10" VerticalContentAlignment="Center" ItemsSource="{Binding Path=Printer.FontOptions}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Path=Printer.Font, Mode=TwoWay}" IsEnabled="{Binding Path=Printer.Connected}" />
 
+        <Button x:Name="Findbutton" Content="Find" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="18" Command="self:CustomCommands.FindCommand" />
         <Button x:Name="Resetbutton" Content="Reset" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="8" Grid.Row="18" Command="self:CustomCommands.ResetCommand" />
     </Grid>
 </Window>

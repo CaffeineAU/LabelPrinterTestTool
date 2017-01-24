@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -429,6 +430,29 @@ namespace LabelPrinterTestTool
             WriteCommand(0x1b, 0x64, lines);
         }
 
+        public IPAddress FindPrinter()
+        {
+            UdpClient finder = new UdpClient();// new IPEndPoint(IPAddress.Any, 48780));
+            finder.Client.Bind(new IPEndPoint(IPAddress.Any, 48780));
+            finder.Connect(new IPEndPoint(IPAddress.Broadcast, 48781));
+            finder.Client.Send(Encoding.ASCII.GetBytes("FIND"));
+            finder.Client.MulticastLoopback = false;
+            finder.Client.EnableBroadcast = true;
+
+            int retries = 5;
+            while (finder.Client.Available == 0 && retries-- > 0)
+            {
+                System.Threading.Thread.Sleep(250);
+
+            }
+                byte[] buffer = new byte[255];
+            while (finder.Client.Available > 0)
+            {
+                finder.Client.Receive(buffer);
+            }
+            return IPAddress.Any;
+                
+        }
 
         private void WriteCommand(byte command, byte? command2 = null, byte? n = null, byte? m = null)
         {

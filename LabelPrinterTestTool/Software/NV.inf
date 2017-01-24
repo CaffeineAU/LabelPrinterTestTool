@@ -1,0 +1,67 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; File Name		: NV.INF
+;; Function Outline	: SENOR NV Image Tool Information File
+;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+[COMMON]
+VERSION 	= 1.0.2
+DESCRIPTION 	= NV Image Tool V1.0.2
+
+
+ModelName 	=GTP-250(Color)
+;0 : Dot, 1 : 1 color Thermal, 2 : 2 color Thermal
+; not use option : 3 : label Printer
+MODELTYPE 	=2			
+RECEIPTWIDTH 	=512
+MEMORYSIZE 	=256 
+DOWNMAX		=78
+IMAGE =3
+
+
+
+[COMMUNICATION]
+; 0 = Serial; 1 = Parallel; 2 = USB; 3 = Ethernet
+INTERFACE 	=1 			
+
+;Serial, Parallel, USB
+PORTNAME 	=LPT1
+USBPORT		=\\?\usb#vid_1504&pid_0006#5&2a31152f&0&2#{a5dcbf10-6530-11d2-901f-00c04fb951ed}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Serial Setting
+;2400-115200
+BAUDRATE 	=19200	
+PARITY   	=NONE
+DATABITS	=8
+STOPBITS	=1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Ethernet Setting
+IP1 	=192
+IP2 	=168
+IP3 	=100
+IP4 	=135
+PORT 	=9100
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;0st Printer Name
+;1st Attribute : Interface Supported
+;1 : Serial, 2 : Parallel , 4 : USB, 8 : Ethernet
+;2st Attribute : Printer Type
+;0 : Dot, 1 : 1 color Thermal, 2 : 2 color Thermal, 3 : label Printer
+;3st Attribute : Printer Width
+;4st Attribute : Printer Down max count
+;5st Attribute : Printer Flash Size (KByte)
+
+[PRINTERLIST]
+PRINTER01 = GTP-250(Mono),015,001,512,256,256
+PRINTER02 = GTP-250(Color),015,002,512,078,256
+PRINTER03 = GDP-220,015,000,400,010,256
+
+
+
+
+
+
