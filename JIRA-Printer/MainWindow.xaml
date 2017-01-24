@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JIRA_Printer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="1024" Width="1280">
     <Grid>
-        
+        <DataGrid x:Name="dataGrid" Grid.Column="1" ItemsSource="{Binding Path=Result.issues}" HorizontalAlignment="Stretch" Margin="5" Grid.Row="1" VerticalAlignment="Stretch">
+            <!--<DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:Uid="DataTemplate_1">
+                            <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=fields.assignee, RelativeSource={RelativeSource Self}}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Stretch"/>
+
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>-->
+        </DataGrid>
     </Grid>
 </Window>
