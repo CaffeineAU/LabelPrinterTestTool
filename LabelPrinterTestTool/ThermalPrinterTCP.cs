@@ -18,6 +18,19 @@ namespace LabelPrinterTestTool
         //another comment as a collaborator
         TcpClient printer = new TcpClient();
 
+        private Boolean appendLF = true;
+
+        public Boolean AppendLF
+        {
+            get { return appendLF; }
+            set
+            {
+                appendLF = value;
+                OnPropertyChanged("AppendLF");
+            }
+        }
+
+
         private String iPAddress = "";
 
         public String PrinterIPAddress
@@ -84,6 +97,34 @@ namespace LabelPrinterTestTool
         public double CalculatedPrintPosition
         {
             get { return (double)PrintPosition * 0.141; }
+        }
+
+        private int lineSpacing = 0;
+
+        public int LineSpacing
+        {
+            get { return lineSpacing; }
+            set
+            {
+                if (value < 0 || value > 255)
+                {
+                    WriteCommand(0x1B, 0x32); // default
+
+                }
+                else
+                {
+                    lineSpacing = value;
+                    WriteCommand(0x1B, 0x33, (byte)(value));
+                }
+
+                OnPropertyChanged("LineSpacing");
+                OnPropertyChanged("CalculatedLineSpacing");
+            }
+        }
+
+        public double CalculatedLineSpacing
+        {
+            get { return (double)LineSpacing * 0.0705; }
         }
 
         private Boolean connected = false;
@@ -401,7 +442,6 @@ namespace LabelPrinterTestTool
             }
         }
 
-
         public ThermalPrinterTCP()
         {
 
@@ -423,7 +463,10 @@ namespace LabelPrinterTestTool
 
         public void WriteAsciiString(String text)
         {
-            text += "\n";
+            if (AppendLF)
+            {
+                    text += "\n";
+            }
 
             printer.GetStream().Write(Encoding.ASCII.GetBytes(text), 0, Encoding.ASCII.GetBytes(text).Length);
         }
