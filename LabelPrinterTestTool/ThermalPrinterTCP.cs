@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -17,26 +18,50 @@ namespace LabelPrinterTestTool
         //another comment as a collaborator
         TcpClient printer = new TcpClient();
 
-        private String m_IPAddress = "172.21.114.185";
+        private String iPAddress = "";
 
         public String PrinterIPAddress
         {
-            get { return m_IPAddress; }
+            get { return iPAddress; }
             set
             {
-                m_IPAddress = value;
+                iPAddress = value;
                 OnPropertyChanged("PrinterIPAddress");
             }
         }
 
-        private int m_port = 9100;
+        private String subnetMask = "";
+
+        public String SubnetMask
+        {
+            get { return subnetMask; }
+            set
+            {
+                subnetMask = value;
+                OnPropertyChanged("SubnetMask");
+            }
+        }
+
+        private String macAddress = "";
+
+        public String MACAddress
+        {
+            get { return macAddress; }
+            set
+            {
+                macAddress = value;
+                OnPropertyChanged("MACAddress");
+            }
+        }
+
+        private int port = 0;
 
         public int Port
         {
-            get { return m_port; }
+            get { return port; }
             set
             {
-                m_port = value;
+                port = value;
                 OnPropertyChanged("Port");
             }
         }
@@ -430,6 +455,44 @@ namespace LabelPrinterTestTool
             WriteCommand(0x1b, 0x64, lines);
         }
 
+        public IPAddress FindPrinter()
+        {
+            UdpClient finder = new UdpClient();// new IPEndPoint(IPAddress.Any, 48780));
+            finder.Client.Bind(new IPEndPoint(IPAddress.Any, 48780));
+            //finder.Connect(new IPEndPoint(IPAddress.Broadcast, 48781));
+            finder.Client.MulticastLoopback = false;
+            finder.Client.EnableBroadcast = true;
+            finder.Send(Encoding.ASCII.GetBytes("FIND"), Encoding.ASCII.GetByteCount("FIND"), new IPEndPoint(IPAddress.Broadcast, 48781) );
+
+            int retries = 5;
+            while (finder.Client.Available == 0 && retries-- > 0)
+            {
+                System.Threading.Thread.Sleep(250);
+
+            }
+                byte[] buffer = new byte[255];
+            while (finder.Client.Available > 0)
+            {
+                finder.Client.Receive(buffer);
+            }
+            if (Encoding.ASCII.GetString(new byte[] { buffer[0], buffer[1], buffer[2], buffer[3] }) == "IMIN")
+            {
+                PrinterIPAddress = new IPAddress(new byte[] { buffer[10], buffer[11], buffer[12], buffer[13] }).ToString();
+                Port = buffer[22] * 0x100 + buffer[23];
+                MACAddress = String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}", buffer[4], buffer[5], buffer[6], buffer[7], buffer[8], buffer[9]);
+                SubnetMask = new IPAddress(new byte[] { buffer[14], buffer[15], buffer[16], buffer[17] }).ToString();
+           }
+
+            //StringBuilder sb = new StringBuilder();
+            //foreach (var b in buffer)
+            //{
+            //    sb.AppendFormat("{0:X2} ", b);
+            //}
+            //System.Windows.Clipboard.SetText(sb.ToString());
+
+            return IPAddress.Any;
+                
+        }
 
         private void WriteCommand(byte command, byte? command2 = null, byte? n = null, byte? m = null)
         {

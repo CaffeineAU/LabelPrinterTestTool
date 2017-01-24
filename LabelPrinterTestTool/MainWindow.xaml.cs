@@ -81,10 +81,10 @@ namespace LabelPrinterTestTool
        }
 
 
-        //private void ConnectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        //{
-        //    e.CanExecute = !Printer.Connected;
-        //}
+        private void ConnectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrEmpty(Printer.PrinterIPAddress);
+        }
 
         private void ConnectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -137,6 +137,16 @@ namespace LabelPrinterTestTool
         private void PrintCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             printer.Print();
+        }
+
+        private void FindCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !Printer.Connected;
+        }
+
+        private void FindCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Printer.FindPrinter();
         }
 
 
