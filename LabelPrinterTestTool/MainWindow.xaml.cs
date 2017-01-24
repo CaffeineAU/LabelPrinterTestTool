@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SENOR_LIB; 
 
 namespace LabelPrinterTestTool
 {
@@ -25,9 +26,9 @@ namespace LabelPrinterTestTool
     {
 
 
-        private ThermalPrinterTCP printer = new ThermalPrinterTCP();
+        private  GTP_250 printer = new GTP_250();
 
-        public ThermalPrinterTCP Printer
+        public GTP_250 Printer
         {
             get { return printer; }
             set
@@ -131,7 +132,7 @@ namespace LabelPrinterTestTool
 
         private void PrintCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = Printer.Connected && Printer.PageMode == ThermalPrinterTCP.NumericOptions.One;
+            e.CanExecute = Printer.Connected && Printer.PageMode == GTP_250.NumericOptions.One;
         }
 
         private void PrintCommand_Executed(object sender, ExecutedRoutedEventArgs e)

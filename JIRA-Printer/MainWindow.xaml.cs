@@ -17,6 +17,7 @@ using System.Web.Script.Serialization;
 using System.Net;
 using System.IO;
 using System.ComponentModel;
+using SENOR_LIB;
 
 namespace JIRA_Printer
 {
@@ -50,7 +51,7 @@ namespace JIRA_Printer
             InitializeComponent();
             this.DataContext = this;
 
-            var webRequest = WebRequest.Create("http://jirapd.corp.resmed.org/rest/api/2/search?jql=project=MTE%20AND%20(status%20in(%22Open%22,%22In%20Progress%22))&fields=key,status,summary,progress,duedate,assignee&maxResults=100");
+            var webRequest = WebRequest.Create("http://jirapd.corp.resmed.org/rest/api/2/search?jql=project=MTE%20AND%20(status%20in(%22Open%22,%22In%20Progress%22))&fields=key,status,summary,progress,duedate,assignee&maxResults=2");
 
             // do this once, to create the .settings file
             Properties.Settings.Default.JIRAUsername = Properties.Settings.Default.JIRAUsername;
@@ -78,6 +79,51 @@ namespace JIRA_Printer
                 }
 
             }
+
+            GTP_250 printer = new GTP_250();
+
+            printer.FindPrinter();
+
+            printer.Connect();
+
+            
+
+            foreach (var issue in Result.issues)
+            {
+
+                printer.PageMode = GTP_250.NumericOptions.One;
+
+                //printer.PageModePrintDirection = GTP_250.NumericOptions.One;
+
+                //jira key (e.g. MTE-123)
+                printer.WriteAsciiString(issue.key);
+
+                //summary of the issue
+                printer.WriteAsciiString("Summary: " + issue.fields.summary);
+
+
+                //assignee
+                printer.WriteAsciiString("Assignee: " + issue.fields.assignee.displayName);
+
+
+                //due date
+                printer.WriteAsciiString("Due Date: " + issue.fields.duedate);
+
+
+                //progress
+                printer.WriteAsciiString("Progress: " + issue.fields.progress.percent.ToString() + "%");
+
+
+
+                printer.Print();
+
+                printer.Cut();
+
+            }
+
+            
+
+
 
 
         }

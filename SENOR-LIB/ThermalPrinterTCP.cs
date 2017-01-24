@@ -9,9 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LabelPrinterTestTool
+
+namespace SENOR_LIB
 {
-    public class ThermalPrinterTCP : INotifyPropertyChanged
+    public class GTP_250 : INotifyPropertyChanged
     {
         //add a comment
         // I see your comment
@@ -442,7 +443,7 @@ namespace LabelPrinterTestTool
             }
         }
 
-        public ThermalPrinterTCP()
+        public GTP_250()
         {
 
         }
