@@ -79,6 +79,7 @@
 
         <Button x:Name="Cutbutton" Content="Cut" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="4" Grid.Row="4" Command="self:CustomCommands.CutCommand" />
         <Button x:Name="Printbutton" Content="Print (page)" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="4" Grid.Row="5" Command="self:CustomCommands.PrintCommand" />
+        <Button x:Name="Imagebutton" Content="Print bit image" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="6" Click="Imagebutton_Click"  />
         <TextBox x:Name="PrintPosBox" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=Printer.PrintPosition, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" Margin="10" Grid.Row="4" Grid.Column="2" IsEnabled="{Binding Path=Printer.Connected}" />
         <Label x:Name="PrintPosLabel" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10" Grid.Row="4" VerticalAlignment="Stretch" VerticalContentAlignment="Center">
             <Label.Style>

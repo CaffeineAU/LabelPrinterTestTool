@@ -34,17 +34,17 @@ namespace JIRA_Printer
             return System.Convert.ToBase64String(plainTextBytes);
         }
 
-        private JIRAResult  result;
+        //private JIRAResult  result;
 
-        public JIRAResult Result
-        {
-            get { return result; }
-            set
-            {
-                result = value;
-                OnPropertyChanged("Result");
-            }
-        }
+        //public JIRAResult Result
+        //{
+        //    get { return result; }
+        //    set
+        //    {
+        //        result = value;
+        //        OnPropertyChanged("Result");
+        //    }
+        //}
 
 
         public MainWindow()
