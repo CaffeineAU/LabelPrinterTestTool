@@ -89,6 +89,7 @@ namespace JIRA_Printer
             }
         }
 
+        TicketPrinter printer;
 
 
         public MainWindow()
@@ -96,12 +97,18 @@ namespace JIRA_Printer
             InitializeComponent();
             this.DataContext = this;
 
+            
+
+            printer = new TicketPrinter();
+
+            printer.FindPrinter();
+
+            printer.Connect();
+
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += dispatcherTimer_Tick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
             dispatcherTimer.Start();
-
-
 
             // do this once, to create the .settings file
             if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
@@ -140,6 +147,8 @@ namespace JIRA_Printer
         }
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine("Tick");
+
             string project = "MTE";
             int num_results = 100;
 
@@ -147,7 +156,7 @@ namespace JIRA_Printer
             DateTime last_run = Properties.Settings.Default.LAST_QUERY;
 
 
-
+            //this needs to be equal to the "tick" time
             string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes, 1)); // @"startOfDay(""-100"")";
 
 
@@ -181,36 +190,35 @@ namespace JIRA_Printer
             {
                 var response = (HttpWebResponse)webRequest.GetResponse();
 
-
-
-
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     if (responseStream != null)
                     {
 
-                        //responseStream.CopyTo(memoryStream);
                         String responseString = new StreamReader(responseStream).ReadToEnd();
 
-                        //Clipboard.SetText(responseString);
-                        //Result =  new JavaScriptSerializer().Deserialize<JIRAResult>(responseString);
-
                         d = Json.Decode(responseString);
-                        StringBuilder sb = new StringBuilder();
+
+                        bool flag = false;
                         foreach (var issue in d.issues)
                         {
                             Ticket t = new Ticket(issue);
 
                             Console.WriteLine(t.ToString());
+
+                            printer.PrintTicket(t);
+
+                            flag = true;
                         }
-                        //MessageBox.Show(sb.ToString(), "Dynamic is awesome!");
 
+                        if (flag) //is there a way to count d.issues?
+                        {
+                            Properties.Settings.Default.LAST_QUERY = DateTime.Now;
 
+                            Properties.Settings.Default.Save();
+                        }
                     }
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -219,58 +227,11 @@ namespace JIRA_Printer
             }
 
 
-            Properties.Settings.Default.LAST_QUERY = DateTime.Now;
-
-            Properties.Settings.Default.Save();
-
-
-            //GTP_250 printer = new GTP_250();
-
-            //printer.FindPrinter();
-
-            //printer.Connect();
-
-
-
-            //foreach (var issue in Result.issues)
-            //{
-
-            //    printer.PageMode = GTP_250.NumericOptions.One;
-
-            //    //printer.PageModePrintDirection = GTP_250.NumericOptions.One;
-
-            //    //jira key (e.g. MTE-123)
-            //    printer.WriteAsciiString(issue.key);
-
-            //    //summary of the issue
-            //    printer.WriteAsciiString("Summary: " + issue.fields.summary);
-
-
-            //    //assignee
-            //    printer.WriteAsciiString("Assignee: " + issue.fields.assignee.displayName);
-
-
-            //    //due date
-            //    printer.WriteAsciiString("Due Date: " + issue.fields.duedate);
-
-
-            //    //progress
-            //    printer.WriteAsciiString("Progress: " + issue.fields.progress.percent.ToString() + "%");
-
-
-
-            //    printer.Print();
-
-            //    printer.Cut();
-
-            //}
-
-
-
-
-
+            
 
         }
+
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(String name)
@@ -298,8 +259,10 @@ namespace JIRA_Printer
             IssueStatuses.RemoveAt(StatuslistBox.SelectedIndex);
         }
 
-
-
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            printer.Disconnect();
+        }
     }
 
     // public class JIRAResult

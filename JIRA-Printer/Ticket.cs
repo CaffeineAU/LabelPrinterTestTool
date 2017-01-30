@@ -11,8 +11,21 @@ namespace JIRA_Printer
         public Ticket(dynamic d)
         {
             Key = d.key;
-
+            Component = "Not implemented";
             Summary = d.fields.summary;
+
+            Assignee = d.fields.assignee.displayName;
+
+            DueDate = d.fields.duedate;
+
+            try
+            {
+                Progress = Int32.Parse(d.fields.progress.percent);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
         }
 
@@ -45,6 +58,39 @@ namespace JIRA_Printer
             get { return _Summary; }
             set { _Summary = value; }
         }
+
+        private string _Assignee;
+
+        public string Assignee
+        {
+            get { return _Assignee; }
+            set { _Assignee = value; }
+        }
+
+        private string _DueDate;
+
+        public string DueDate
+        {
+            get { return _DueDate; }
+            set { _DueDate = value; }
+        }
+
+        private int _Progress;
+
+        public int Progress
+        {
+            get { return _Progress; }
+            set { _Progress = value; }
+        }
+
+        private string _Component;
+
+        public string Component
+        {
+            get { return _Component; }
+            set { _Component = value; }
+        }
+
 
 
 
