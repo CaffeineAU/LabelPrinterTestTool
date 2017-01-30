@@ -5,9 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JIRA_Printer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1024" Width="1280">
-    <Grid>
-        <DataGrid x:Name="dataGrid" Grid.Column="1" ItemsSource="{Binding Path=Result.issues}" HorizontalAlignment="Stretch" Margin="5" Grid.Row="1" VerticalAlignment="Stretch">
+        Title="MainWindow" Height="1024" Width="1280" FontSize="14">
+    <Grid Grid.IsSharedSizeScope="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="300" SharedSizeGroup="Rows"/>
+            <RowDefinition SharedSizeGroup="Rows"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result.issues}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Stretch" Grid.Row="2" Grid.ColumnSpan="4">
             <!--<DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
@@ -19,5 +29,9 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>-->
         </DataGrid>
+        <Label Content="Statuses" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top" Grid.Row="0" />
+        <Label Content="Fields" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top" Grid.Row="1" />
+        <ListBox x:Name="StatuslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueStatuses}"  Margin="10" VerticalAlignment="Stretch" />
+        <ListBox x:Name="FieldslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueFields}"  Margin="10" VerticalAlignment="Stretch" Grid.Row="1" />
     </Grid>
 </Window>

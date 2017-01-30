@@ -47,6 +47,45 @@ namespace JIRA_Printer
         //    }
         //}
 
+        private List<String> issueStatuses = new List<string>();
+
+        public List<String> IssueStatuses
+        {
+            get { return issueStatuses; }
+            set
+            {
+                issueStatuses = value;
+                if (Properties.Settings.Default.IssueStatuses == null)
+                {
+                    Properties.Settings.Default.IssueStatuses = new System.Collections.Specialized.StringCollection();
+                }
+                Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
+                Properties.Settings.Default.Save();
+
+                OnPropertyChanged("IssueStatuses");
+            }
+        }
+
+        private List<String> issueFields = new List<string>();
+
+        public List<String> IssueFields
+        {
+            get { return issueFields; }
+            set
+            {
+                issueFields = value;
+                if (Properties.Settings.Default.IssueFields == null)
+                {
+                    Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
+                }
+                Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
+                Properties.Settings.Default.Save();
+
+                OnPropertyChanged("IssueFields");
+            }
+        }
+
+
 
         public MainWindow()
         {
@@ -59,27 +98,52 @@ namespace JIRA_Printer
                 Properties.Settings.Default.LAST_QUERY = DateTime.Now.AddYears(-1);
                 Properties.Settings.Default.Save();
             }
+            
+            if (Properties.Settings.Default.IssueStatuses == null || Properties.Settings.Default.IssueStatuses.Count == 0)
+            {
+                IssueStatuses = new List<string> { "Open", "In Progress" };
+                Properties.Settings.Default.IssueStatuses = new System.Collections.Specialized.StringCollection();
+                Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
+                Properties.Settings.Default.Save();
+
+            }
+            else
+            {
+                IssueStatuses = Properties.Settings.Default.IssueStatuses.Cast<string>().ToList();
+            }
+
+            if (Properties.Settings.Default.IssueFields == null || Properties.Settings.Default.IssueFields.Count == 0)
+            {
+                IssueFields = new List<string> { "key", "status", "summary", "progress", "duedate", "assignee", "updated" };
+                Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
+                Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
+                Properties.Settings.Default.Save();
+
+            }
+            else
+            {
+                IssueFields = Properties.Settings.Default.IssueFields.Cast<string>().ToList();
+            }
+
 
 
             string project = "MTE";
-            List<string> status=  new List<string> { "Open", "In Progress" };
-            List<string> fields = new List<string> { "key", "status", "summary", "progress", "duedate", "assignee","updated" };
             int num_results = 100;
-            
+
 
             DateTime last_run = Properties.Settings.Default.LAST_QUERY;
 
 
 
-            string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes,1)); // @"startOfDay(""-100"")";
+            string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes, 1)); // @"startOfDay(""-100"")";
 
 
 
-            string str_status = @"""" + String.Join(@""", """, status) + @"""";
-            string str_fields = String.Join(", ", fields);
+            string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
+            string str_fields = String.Join(", ", IssueFields);
 
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}", 
-                Properties.Settings.Default.JIRA_API, 
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}",
+                Properties.Settings.Default.JIRA_API,
                 project,
                 str_status,
                 str_fields,
@@ -90,8 +154,8 @@ namespace JIRA_Printer
 
             var webRequest = WebRequest.Create(request);
 
-            
-            
+
+
 
             #region
             string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
@@ -132,7 +196,7 @@ namespace JIRA_Printer
 
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -202,96 +266,96 @@ namespace JIRA_Printer
 
     }
 
-   // public class JIRAResult
-   // {
-   //     /*
-   //      * {"expand":"names,schema","startAt":0,"maxResults":1,"total":114,"issues":[
-   //      * {"expand":"operations,versionedRepresentations,editmeta,changelog,renderedFields","id":"73389","self":"http://jirapd.corp.resmed.org/rest/api/2/issue/73389",
-   //      * "key":"MTE-1053","fields":{"summary":"Support BC file","progress":{"progress":28800,"total":86400,"percent":33},
-   //      * "assignee":{"self":"http://jirapd.corp.resmed.org/rest/api/2/user?username=bishoyb","name":"bishoyb","key":"bishoyb","emailAddress":"Bishoy.Botros@resmed.com.au",
-   //      * "avatarUrls":{"48x48":"http://jirapd.corp.resmed.org/secure/useravatar?avatarId=10109","24x24":"http://jirapd.corp.resmed.org/secure/useravatar?size=small&avatarId=10109","16x16":"http://jirapd.corp.resmed.org/secure/useravatar?size=xsmall&avatarId=10109","32x32":"http://jirapd.corp.resmed.org/secure/useravatar?size=medium&avatarId=10109"},
-   //      * "displayName":"Bishoy Botros","active":true,"timeZone":"Australia/Sydney"},
-   //      * "duedate":null,
-   //      * "status":{"self":"http://jirapd.corp.resmed.org/rest/api/2/status/3","description":"This issue is being actively worked on at the moment by the assignee.","iconUrl":"http://jirapd.corp.resmed.org/images/icons/statuses/inprogress.png",
-   //      * "name":"In Progress","id":"3","statusCategory":{"self":"http://jirapd.corp.resmed.org/rest/api/2/statuscategory/4","id":4,"key":"indeterminate","colorName":"yellow","name":"In Progress"}}}}]}
-   //      */
+    // public class JIRAResult
+    // {
+    //     /*
+    //      * {"expand":"names,schema","startAt":0,"maxResults":1,"total":114,"issues":[
+    //      * {"expand":"operations,versionedRepresentations,editmeta,changelog,renderedFields","id":"73389","self":"http://jirapd.corp.resmed.org/rest/api/2/issue/73389",
+    //      * "key":"MTE-1053","fields":{"summary":"Support BC file","progress":{"progress":28800,"total":86400,"percent":33},
+    //      * "assignee":{"self":"http://jirapd.corp.resmed.org/rest/api/2/user?username=bishoyb","name":"bishoyb","key":"bishoyb","emailAddress":"Bishoy.Botros@resmed.com.au",
+    //      * "avatarUrls":{"48x48":"http://jirapd.corp.resmed.org/secure/useravatar?avatarId=10109","24x24":"http://jirapd.corp.resmed.org/secure/useravatar?size=small&avatarId=10109","16x16":"http://jirapd.corp.resmed.org/secure/useravatar?size=xsmall&avatarId=10109","32x32":"http://jirapd.corp.resmed.org/secure/useravatar?size=medium&avatarId=10109"},
+    //      * "displayName":"Bishoy Botros","active":true,"timeZone":"Australia/Sydney"},
+    //      * "duedate":null,
+    //      * "status":{"self":"http://jirapd.corp.resmed.org/rest/api/2/status/3","description":"This issue is being actively worked on at the moment by the assignee.","iconUrl":"http://jirapd.corp.resmed.org/images/icons/statuses/inprogress.png",
+    //      * "name":"In Progress","id":"3","statusCategory":{"self":"http://jirapd.corp.resmed.org/rest/api/2/statuscategory/4","id":4,"key":"indeterminate","colorName":"yellow","name":"In Progress"}}}}]}
+    //      */
 
-   //     public String expand { get; set; }
-   //     public String startAt { get; set; }
-   //     public String maxResults { get; set; }
-   //     public String total { get; set; }
-   //     public JIRAIssue[] issues { get; set; }
+    //     public String expand { get; set; }
+    //     public String startAt { get; set; }
+    //     public String maxResults { get; set; }
+    //     public String total { get; set; }
+    //     public JIRAIssue[] issues { get; set; }
 
-   // }
+    // }
 
-   // public class JIRAIssue
-   // {
-   //     public String expand { get; set; }
+    // public class JIRAIssue
+    // {
+    //     public String expand { get; set; }
 
-   //     public int id { get; set; }
+    //     public int id { get; set; }
 
-   //     public Uri self { get; set; }
-   //     public String key { get; set; }
-   //     public JIRAField fields { get; set; }
-   // }
-   // public class JIRAField
-   // {
-   //     public String summary { get; set; }
+    //     public Uri self { get; set; }
+    //     public String key { get; set; }
+    //     public JIRAField fields { get; set; }
+    // }
+    // public class JIRAField
+    // {
+    //     public String summary { get; set; }
 
-   //     public JIRAProgress progress { get; set; }
+    //     public JIRAProgress progress { get; set; }
 
-   //     public JIRAAssignee assignee { get; set; }
-   //     public String duedate { get; set; }
-   //     public JIRAStatus status { get; set; }
+    //     public JIRAAssignee assignee { get; set; }
+    //     public String duedate { get; set; }
+    //     public JIRAStatus status { get; set; }
 
-   // }
+    // }
 
-   // public class JIRAStatus
-   // {
-   //     public Uri self { get; set; }
-   //     public String description { get; set; }
-   //      public Uri iconUrl { get; set; }
-   //     public String name { get; set; }
-   //     public int id { get; set; }
-   //     public JIRAStatusCategory statusCategory { get; set; }
-   //}
+    // public class JIRAStatus
+    // {
+    //     public Uri self { get; set; }
+    //     public String description { get; set; }
+    //      public Uri iconUrl { get; set; }
+    //     public String name { get; set; }
+    //     public int id { get; set; }
+    //     public JIRAStatusCategory statusCategory { get; set; }
+    //}
 
-   // public class JIRAStatusCategory
-   // {
-   //     public Uri self { get; set; }
-   //     public int id { get; set; }
-   //     public String key { get; set; }
-   //     public String colorName { get; set; }
-   //     public String name { get; set; }
+    // public class JIRAStatusCategory
+    // {
+    //     public Uri self { get; set; }
+    //     public int id { get; set; }
+    //     public String key { get; set; }
+    //     public String colorName { get; set; }
+    //     public String name { get; set; }
 
-   // }
+    // }
 
-   // public class JIRAAssignee
-   // {
-   //     public Uri self { get; set; }
-   //     public String name { get; set; }
-   //     public String key { get; set; }
-   //     public String emailAddress { get; set; }
+    // public class JIRAAssignee
+    // {
+    //     public Uri self { get; set; }
+    //     public String name { get; set; }
+    //     public String key { get; set; }
+    //     public String emailAddress { get; set; }
 
-   //     public JIRAAvatarURL avatarUrls { get; set; }
-   //     public String displayName { get; set; }
-   //     public String active { get; set; }
-   //     public String timeZone { get; set; }
-   // }
+    //     public JIRAAvatarURL avatarUrls { get; set; }
+    //     public String displayName { get; set; }
+    //     public String active { get; set; }
+    //     public String timeZone { get; set; }
+    // }
 
-   // public class JIRAAvatarURL
-   // {
-   //     public Uri _48x48 { get; set; }
-   //     public Uri _24x24 { get; set; }
-   //     public Uri _16x16 { get; set; }
-   //     public Uri _32x32 { get; set; }
-   // }
+    // public class JIRAAvatarURL
+    // {
+    //     public Uri _48x48 { get; set; }
+    //     public Uri _24x24 { get; set; }
+    //     public Uri _16x16 { get; set; }
+    //     public Uri _32x32 { get; set; }
+    // }
 
-   // public class JIRAProgress
-   // {
-   //     public int progress { get; set; }
-   //     public int total { get; set; }
-   //     public int percent { get; set; }
-   // }
+    // public class JIRAProgress
+    // {
+    //     public int progress { get; set; }
+    //     public int total { get; set; }
+    //     public int percent { get; set; }
+    // }
 }
 

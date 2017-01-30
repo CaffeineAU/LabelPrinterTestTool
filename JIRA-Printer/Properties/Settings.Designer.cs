@@ -54,6 +54,7 @@ namespace JIRA_Printer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public global::System.DateTime LAST_QUERY {
             get {
                 return ((global::System.DateTime)(this["LAST_QUERY"]));
@@ -67,12 +68,39 @@ namespace JIRA_Printer.Properties {
         [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("http://jirapd.corp.resmed.org/rest/api/2/")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public string JIRA_API {
             get {
                 return ((string)(this["JIRA_API"]));
             }
             set {
                 this["JIRA_API"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public global::System.Collections.Specialized.StringCollection IssueStatuses {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["IssueStatuses"]));
+            }
+            set {
+                this["IssueStatuses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public global::System.Collections.Specialized.StringCollection IssueFields {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["IssueFields"]));
+            }
+            set {
+                this["IssueFields"] = value;
             }
         }
     }

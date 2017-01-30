@@ -8,11 +8,17 @@
     <Setting Name="JIRAPassword" Provider="PortableSettingsProvider" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">pass</Value>
     </Setting>
-    <Setting Name="LAST_QUERY" Provider="PortableSettingsProvider" Type="System.DateTime" Scope="User">
+    <Setting Name="LAST_QUERY" Provider="PortableSettingsProvider" Roaming="true" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="JIRA_API" Provider="PortableSettingsProvider" Type="System.String" Scope="User">
+    <Setting Name="JIRA_API" Provider="PortableSettingsProvider" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://jirapd.corp.resmed.org/rest/api/2/</Value>
+    </Setting>
+    <Setting Name="IssueStatuses" Provider="PortableSettingsProvider" Roaming="true" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="IssueFields" Provider="PortableSettingsProvider" Roaming="true" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
