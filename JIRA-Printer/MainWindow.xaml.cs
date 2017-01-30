@@ -53,6 +53,11 @@ namespace JIRA_Printer
             InitializeComponent();
             this.DataContext = this;
 
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += dispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
+            dispatcherTimer.Start();
+
             // do this once, to create the .settings file
             if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
             {
@@ -60,38 +65,14 @@ namespace JIRA_Printer
                 Properties.Settings.Default.Save();
             }
 
-
-            string project = "MTE";
-            List<string> status=  new List<string> { "Open", "In Progress" };
-            List<string> fields = new List<string> { "key", "status", "summary", "progress", "duedate", "assignee","updated" };
-            int num_results = 100;
             
-
-            DateTime last_run = Properties.Settings.Default.LAST_QUERY;
-
+        }
 
 
-            string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes,1)); // @"startOfDay(""-100"")";
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
 
-
-
-            string str_status = @"""" + String.Join(@""", """, status) + @"""";
-            string str_fields = String.Join(", ", fields);
-
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}", 
-                Properties.Settings.Default.JIRA_API, 
-                project,
-                str_status,
-                str_fields,
-                num_results,
-                time_diff);
-
-            Clipboard.SetText(request);
-
-            var webRequest = WebRequest.Create(request);
-
-            
-            
+            WebRequest webRequest = getRequest();
 
             #region
             string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
@@ -132,7 +113,7 @@ namespace JIRA_Printer
 
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -145,53 +126,6 @@ namespace JIRA_Printer
 
             Properties.Settings.Default.Save();
 
-
-            //GTP_250 printer = new GTP_250();
-
-            //printer.FindPrinter();
-
-            //printer.Connect();
-
-
-
-            //foreach (var issue in Result.issues)
-            //{
-
-            //    printer.PageMode = GTP_250.NumericOptions.One;
-
-            //    //printer.PageModePrintDirection = GTP_250.NumericOptions.One;
-
-            //    //jira key (e.g. MTE-123)
-            //    printer.WriteAsciiString(issue.key);
-
-            //    //summary of the issue
-            //    printer.WriteAsciiString("Summary: " + issue.fields.summary);
-
-
-            //    //assignee
-            //    printer.WriteAsciiString("Assignee: " + issue.fields.assignee.displayName);
-
-
-            //    //due date
-            //    printer.WriteAsciiString("Due Date: " + issue.fields.duedate);
-
-
-            //    //progress
-            //    printer.WriteAsciiString("Progress: " + issue.fields.progress.percent.ToString() + "%");
-
-
-
-            //    printer.Print();
-
-            //    printer.Cut();
-
-            //}
-
-
-
-
-
-
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -200,7 +134,42 @@ namespace JIRA_Printer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+
+        public WebRequest getRequest()
+        {
+            string project = "MTE";
+            List<string> status = new List<string> { "Open", "In Progress", "Reopened" };
+            List<string> fields = new List<string> { "key", "status", "summary", "progress", "duedate", "assignee", "updated" };
+            int num_results = 100;
+
+
+            DateTime last_run = Properties.Settings.Default.LAST_QUERY;
+
+
+
+            string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes, 1)); // @"startOfDay(""-100"")";
+
+
+
+            string str_status = @"""" + String.Join(@""", """, status) + @"""";
+            string str_fields = String.Join(", ", fields);
+
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}",
+                Properties.Settings.Default.JIRA_API,
+                project,
+                str_status,
+                str_fields,
+                num_results,
+                time_diff);
+
+            Clipboard.SetText(request);
+
+            return WebRequest.Create(request);
+        }
+
+
     }
+
 
    // public class JIRAResult
    // {
