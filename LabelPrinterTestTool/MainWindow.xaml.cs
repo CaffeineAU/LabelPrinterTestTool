@@ -159,6 +159,9 @@ namespace LabelPrinterTestTool
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-
+        private void Imagebutton_Click(object sender, RoutedEventArgs e)
+        {
+            Printer.PrintBitImage();
+        }
     }
 }

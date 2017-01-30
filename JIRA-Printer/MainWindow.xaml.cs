@@ -34,17 +34,17 @@ namespace JIRA_Printer
             return System.Convert.ToBase64String(plainTextBytes);
         }
 
-        /*private JIRAResult  result;
+        //private JIRAResult  result;
 
-        public JIRAResult Result
-        {
-            get { return result; }
-            set
-            {
-                result = value;
-                OnPropertyChanged("Result");
-            }
-        }*/
+        //public JIRAResult Result
+        //{
+        //    get { return result; }
+        //    set
+        //    {
+        //        result = value;
+        //        OnPropertyChanged("Result");
+        //    }
+        //}
 
 
         public MainWindow()
@@ -53,10 +53,6 @@ namespace JIRA_Printer
             this.DataContext = this;
 
             var webRequest = WebRequest.Create("http://jirapd.corp.resmed.org/rest/api/2/search?jql=project=MTE%20AND%20(status%20in(%22Open%22,%22In%20Progress%22))&fields=key,status,summary,progress,duedate,assignee&maxResults=20");
-
-            string project = "MTE";
-
-
 
             // do this once, to create the .settings file
             Properties.Settings.Default.JIRAUsername = Properties.Settings.Default.JIRAUsername;
