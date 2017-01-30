@@ -71,7 +71,7 @@ namespace JIRA_Printer
 
 
 
-            string time_diff = string.Format("-{0:F0}m", (DateTime.Now - last_run).TotalMinutes); // @"startOfDay(""-100"")";
+            string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes,1)); // @"startOfDay(""-100"")";
 
 
 
@@ -127,13 +127,7 @@ namespace JIRA_Printer
                         }
                         MessageBox.Show(sb.ToString(), "Dynamic is awesome!");
 
-                        if (d.total > 0)
-                        {
 
-                            Properties.Settings.Default.LAST_QUERY = DateTime.Now;
-
-                            Properties.Settings.Default.Save();
-                        }
                     }
 
                 }
@@ -147,6 +141,9 @@ namespace JIRA_Printer
             }
 
 
+            Properties.Settings.Default.LAST_QUERY = DateTime.Now;
+
+            Properties.Settings.Default.Save();
 
 
             //GTP_250 printer = new GTP_250();
