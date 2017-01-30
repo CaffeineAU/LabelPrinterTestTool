@@ -469,7 +469,7 @@ namespace SENOR_LIB
         {
             if (AppendLF)
             {
-                    text += "\n";
+                text += "\n";
             }
 
             printer.GetStream().Write(Encoding.ASCII.GetBytes(text), 0, Encoding.ASCII.GetBytes(text).Length);
@@ -514,7 +514,7 @@ namespace SENOR_LIB
             //finder.Connect(new IPEndPoint(IPAddress.Broadcast, 48781));
             finder.Client.MulticastLoopback = false;
             finder.Client.EnableBroadcast = true;
-            finder.Send(Encoding.ASCII.GetBytes("FIND"), Encoding.ASCII.GetByteCount("FIND"), new IPEndPoint(IPAddress.Broadcast, 48781) );
+            finder.Send(Encoding.ASCII.GetBytes("FIND"), Encoding.ASCII.GetByteCount("FIND"), new IPEndPoint(IPAddress.Broadcast, 48781));
 
             int retries = 5;
             while (finder.Client.Available == 0 && retries-- > 0)
@@ -522,7 +522,7 @@ namespace SENOR_LIB
                 System.Threading.Thread.Sleep(250);
 
             }
-                byte[] buffer = new byte[255];
+            byte[] buffer = new byte[255];
             while (finder.Client.Available > 0)
             {
                 finder.Client.Receive(buffer);
@@ -533,7 +533,7 @@ namespace SENOR_LIB
                 Port = buffer[22] * 0x100 + buffer[23];
                 MACAddress = String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}", buffer[4], buffer[5], buffer[6], buffer[7], buffer[8], buffer[9]);
                 SubnetMask = new IPAddress(new byte[] { buffer[14], buffer[15], buffer[16], buffer[17] }).ToString();
-           }
+            }
 
             //StringBuilder sb = new StringBuilder();
             //foreach (var b in buffer)
@@ -543,7 +543,7 @@ namespace SENOR_LIB
             //System.Windows.Clipboard.SetText(sb.ToString());
 
             return IPAddress.Any;
-                
+
         }
 
         private void WriteCommand(byte command, byte? command2 = null, byte? n = null, byte? m = null)
@@ -576,125 +576,127 @@ namespace SENOR_LIB
         }
 
         public string GetLogo(string file)
-    {
-        string logo = "";
-        if (!File.Exists(file))
-            return null;
-         BitmapData data = GetBitmapData(file);
-         BitArray dots = data.Dots;
-         byte[] width = BitConverter.GetBytes(data.Width);
-
-         int offset = 0;
-         MemoryStream stream = new MemoryStream();
-         BinaryWriter bw = new BinaryWriter(stream);
-
-         bw.Write((char)0x1B);
-         bw.Write('@');
-
-         bw.Write((char)0x1B);
-         bw.Write('3');
-         bw.Write((byte)24);
-
-         while (offset < data.Height)
-         {
-             bw.Write((char)0x1B);
-             bw.Write('*');         // bit-image mode
-             bw.Write((byte)33);    // 24-dot double-density
-             bw.Write(width[0]);  // width low byte
-             bw.Write(width[1]);  // width high byte
-
-             for (int x = 0; x < data.Width; ++x)
-             {
-                 for (int k = 0; k < 3; ++k)
-                 {
-                     byte slice = 0;
-                     for (int b = 0; b < 8; ++b)
-                     {
-                         int y = (((offset / 8) + k) * 8) + b;
-                         // Calculate the location of the pixel we want in the bit array.
-                         // It'll be at (y * width) + x.
-                         int i = (y * data.Width) + x;
-
-                         // If the image is shorter than 24 dots, pad with zero.
-                         bool v = false;
-                         if (i < dots.Length)
-                         {
-                             v = dots[i];
-                         }
-                         slice |= (byte)((v ? 1 : 0) << (7 - b));
-                     }
-
-                     bw.Write(slice);
-                 }
-             }
-             offset += 24;
-             bw.Write((char)0x0A);
-         }
-         // Restore the line spacing to the default of 30 dots.
-         bw.Write((char)0x1B);
-         bw.Write('3');
-         bw.Write((byte)30);
-
-         bw.Flush();
-         byte[] bytes = stream.ToArray();
-         return logo + Encoding.Default.GetString(bytes);
-    }
-
-    public BitmapData GetBitmapData(string bmpFileName)
-    {
-        using (var bitmap = (Bitmap)Bitmap.FromFile(bmpFileName))
         {
-            var threshold = 127;
-            var index = 0;
-            double multiplier = 570; // this depends on your printer model. for Beiyang you should use 1000
-            double scale = (double)(multiplier/(double)bitmap.Width);
-            int xheight = (int)(bitmap.Height * scale);
-            int xwidth = (int)(bitmap.Width * scale);
-            var dimensions = xwidth * xheight;
-            var dots = new BitArray(dimensions);
+            //http://stackoverflow.com/questions/14099239/printing-a-bit-map-image-to-pos-printer-via-comport-in-c-sharp
 
-            for (var y = 0; y < xheight; y++)
+            string logo = "";
+            if (!File.Exists(file))
+                return null;
+            BitmapData data = GetBitmapData(file);
+            BitArray dots = data.Dots;
+            byte[] width = BitConverter.GetBytes(data.Width);
+
+            int offset = 0;
+            MemoryStream stream = new MemoryStream();
+            BinaryWriter bw = new BinaryWriter(stream);
+
+            bw.Write((char)0x1B);
+            bw.Write('@');
+
+            bw.Write((char)0x1B);
+            bw.Write('3');
+            bw.Write((byte)24);
+
+            while (offset < data.Height)
             {
-                for (var x = 0; x < xwidth; x++)
+                bw.Write((char)0x1B);
+                bw.Write('*');         // bit-image mode
+                bw.Write((byte)33);    // 24-dot double-density
+                bw.Write(width[0]);  // width low byte
+                bw.Write(width[1]);  // width high byte
+
+                for (int x = 0; x < data.Width; ++x)
                 {
-                    var _x = (int)(x / scale);
-                    var _y = (int)(y / scale);
-                    var color = bitmap.GetPixel(_x, _y);
-                    var luminance = (int)(color.R * 0.3 + color.G * 0.59 + color.B * 0.11);
-                    dots[index] = (luminance < threshold);
-                    index++;
+                    for (int k = 0; k < 3; ++k)
+                    {
+                        byte slice = 0;
+                        for (int b = 0; b < 8; ++b)
+                        {
+                            int y = (((offset / 8) + k) * 8) + b;
+                            // Calculate the location of the pixel we want in the bit array.
+                            // It'll be at (y * width) + x.
+                            int i = (y * data.Width) + x;
+
+                            // If the image is shorter than 24 dots, pad with zero.
+                            bool v = false;
+                            if (i < dots.Length)
+                            {
+                                v = dots[i];
+                            }
+                            slice |= (byte)((v ? 1 : 0) << (7 - b));
+                        }
+
+                        bw.Write(slice);
+                    }
                 }
+                offset += 24;
+                bw.Write((char)0x0A);
+            }
+            // Restore the line spacing to the default of 30 dots.
+            bw.Write((char)0x1B);
+            bw.Write('3');
+            bw.Write((byte)30);
+
+            bw.Flush();
+            byte[] bytes = stream.ToArray();
+            return logo + Encoding.Default.GetString(bytes);
+        }
+
+        public BitmapData GetBitmapData(string bmpFileName)
+        {
+            using (var bitmap = (Bitmap)Bitmap.FromFile(bmpFileName))
+            {
+                var threshold = 127;
+                var index = 0;
+                double multiplier = 570; // this depends on your printer model. for Beiyang you should use 1000
+                double scale = (double)(multiplier / (double)bitmap.Width);
+                int xheight = (int)(bitmap.Height * scale);
+                int xwidth = (int)(bitmap.Width * scale);
+                var dimensions = xwidth * xheight;
+                var dots = new BitArray(dimensions);
+
+                for (var y = 0; y < xheight; y++)
+                {
+                    for (var x = 0; x < xwidth; x++)
+                    {
+                        var _x = (int)(x / scale);
+                        var _y = (int)(y / scale);
+                        var color = bitmap.GetPixel(_x, _y);
+                        var luminance = (int)(color.R * 0.3 + color.G * 0.59 + color.B * 0.11);
+                        dots[index] = (luminance < threshold);
+                        index++;
+                    }
+                }
+
+                return new BitmapData()
+                {
+                    Dots = dots,
+                    Height = (int)(bitmap.Height * scale),
+                    Width = (int)(bitmap.Width * scale)
+                };
+            }
+        }
+
+        public class BitmapData
+        {
+            public BitArray Dots
+            {
+                get;
+                set;
             }
 
-            return new BitmapData()
+            public int Height
             {
-                Dots = dots,
-                Height = (int)(bitmap.Height*scale),
-                Width = (int)(bitmap.Width*scale)
-            };
-        }
-    }
+                get;
+                set;
+            }
 
-    public class BitmapData
-    {
-        public BitArray Dots
-        {
-            get;
-            set;
+            public int Width
+            {
+                get;
+                set;
+            }
         }
-
-        public int Height
-        {
-            get;
-            set;
-        }
-
-        public int Width
-        {
-            get;
-            set;
-        }
-    }
     }
 
 
