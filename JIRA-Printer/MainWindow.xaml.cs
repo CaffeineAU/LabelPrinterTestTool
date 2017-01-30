@@ -192,10 +192,11 @@ namespace JIRA_Printer
                         StringBuilder sb = new StringBuilder();
                         foreach (var issue in d.issues)
                         {
-                            // this apparently works
-                            sb.AppendFormat("{0} - Summary: {1}\r\n", issue.key, issue.fields.summary);
+                            Ticket t = new Ticket(issue);
+
+                            Console.WriteLine(t.ToString());
                         }
-                        MessageBox.Show(sb.ToString(), "Dynamic is awesome!");
+                        //MessageBox.Show(sb.ToString(), "Dynamic is awesome!");
 
 
                     }
