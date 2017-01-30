@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Web.Helpers;
 using SENOR_LIB;
 using System.Web;
+using System.Collections.ObjectModel;
 
 namespace JIRA_Printer
 {
@@ -35,11 +36,6 @@ namespace JIRA_Printer
             return System.Convert.ToBase64String(plainTextBytes);
         }
 
-                    System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += dispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
-            dispatcherTimer.Start();
-
 
         //private JIRAResult  result;
 
@@ -53,9 +49,9 @@ namespace JIRA_Printer
         //    }
         //}
 
-        private List<String> issueStatuses = new List<string>();
+        private ObservableCollection<String> issueStatuses = new ObservableCollection<string>();
 
-        public List<String> IssueStatuses
+        public ObservableCollection<String> IssueStatuses
         {
             get { return issueStatuses; }
             set
@@ -65,6 +61,7 @@ namespace JIRA_Printer
                 {
                     Properties.Settings.Default.IssueStatuses = new System.Collections.Specialized.StringCollection();
                 }
+                Properties.Settings.Default.IssueStatuses.Clear();
                 Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
                 Properties.Settings.Default.Save();
 
@@ -72,9 +69,9 @@ namespace JIRA_Printer
             }
         }
 
-        private List<String> issueFields = new List<string>();
+        private ObservableCollection<String> issueFields = new ObservableCollection<string>();
 
-        public List<String> IssueFields
+        public ObservableCollection<String> IssueFields
         {
             get { return issueFields; }
             set
@@ -84,6 +81,7 @@ namespace JIRA_Printer
                 {
                     Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
                 }
+                Properties.Settings.Default.IssueFields.Clear();
                 Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
                 Properties.Settings.Default.Save();
 
@@ -98,16 +96,23 @@ namespace JIRA_Printer
             InitializeComponent();
             this.DataContext = this;
 
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += dispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
+            dispatcherTimer.Start();
+
+
+
             // do this once, to create the .settings file
             if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
             {
                 Properties.Settings.Default.LAST_QUERY = DateTime.Now.AddYears(-1);
                 Properties.Settings.Default.Save();
             }
-            
+
             if (Properties.Settings.Default.IssueStatuses == null || Properties.Settings.Default.IssueStatuses.Count == 0)
             {
-                IssueStatuses = new List<string> { "Open", "In Progress" };
+                IssueStatuses = new ObservableCollection<string> { "Open", "In Progress", "Unresolved" };
                 Properties.Settings.Default.IssueStatuses = new System.Collections.Specialized.StringCollection();
                 Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
                 Properties.Settings.Default.Save();
@@ -115,12 +120,12 @@ namespace JIRA_Printer
             }
             else
             {
-                IssueStatuses = Properties.Settings.Default.IssueStatuses.Cast<string>().ToList();
+                IssueStatuses = new ObservableCollection<String>(Properties.Settings.Default.IssueStatuses.Cast<string>().ToList());
             }
 
             if (Properties.Settings.Default.IssueFields == null || Properties.Settings.Default.IssueFields.Count == 0)
             {
-                IssueFields = new List<string> { "key", "status", "summary", "progress", "duedate", "assignee", "updated" };
+                IssueFields = new ObservableCollection<string> { "key", "status", "summary", "progress", "duedate", "assignee", "updated" };
                 Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
                 Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
                 Properties.Settings.Default.Save();
@@ -128,11 +133,13 @@ namespace JIRA_Printer
             }
             else
             {
-                IssueFields = Properties.Settings.Default.IssueFields.Cast<string>().ToList();
+                IssueFields = new ObservableCollection<String>(Properties.Settings.Default.IssueFields.Cast<string>().ToList());
             }
 
 
-
+        }
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
             string project = "MTE";
             int num_results = 100;
 
@@ -270,6 +277,28 @@ namespace JIRA_Printer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
+        private void AddStatusCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrEmpty(newstatus.Text);
+        }
+
+        private void AddStatusCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            IssueStatuses.Add(newstatus.Text);
+        }
+
+        private void RemoveStatusCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = (IssueStatuses.Count > 0 && StatuslistBox.SelectedIndex >= 0);
+        }
+
+        private void RemoveStatusCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            IssueStatuses.RemoveAt(StatuslistBox.SelectedIndex);
+        }
+
+
 
     }
 
