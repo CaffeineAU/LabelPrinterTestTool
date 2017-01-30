@@ -50,5 +50,30 @@ namespace JIRA_Printer.Properties {
                 this["JIRAPassword"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime LAST_QUERY {
+            get {
+                return ((global::System.DateTime)(this["LAST_QUERY"]));
+            }
+            set {
+                this["LAST_QUERY"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://jirapd.corp.resmed.org/rest/api/2/")]
+        public string JIRA_API {
+            get {
+                return ((string)(this["JIRA_API"]));
+            }
+            set {
+                this["JIRA_API"] = value;
+            }
+        }
     }
 }

@@ -19,6 +19,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Web.Helpers;
 using SENOR_LIB;
+using System.Web;
 
 namespace JIRA_Printer
 {
@@ -52,11 +53,45 @@ namespace JIRA_Printer
             InitializeComponent();
             this.DataContext = this;
 
-            var webRequest = WebRequest.Create("http://jirapd.corp.resmed.org/rest/api/2/search?jql=project=MTE%20AND%20(status%20in(%22Open%22,%22In%20Progress%22))&fields=key,status,summary,progress,duedate,assignee&maxResults=20");
-
             // do this once, to create the .settings file
-            Properties.Settings.Default.JIRAUsername = Properties.Settings.Default.JIRAUsername;
-            Properties.Settings.Default.Save();
+            if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
+            {
+                Properties.Settings.Default.LAST_QUERY = DateTime.Now.AddYears(-1);
+                Properties.Settings.Default.Save();
+            }
+
+
+            string project = "MTE";
+            List<string> status=  new List<string> { "Open", "In Progress" };
+            List<string> fields = new List<string> { "key", "status", "summary", "progress", "duedate", "assignee","updated" };
+            int num_results = 100;
+            
+
+            DateTime last_run = Properties.Settings.Default.LAST_QUERY;
+
+
+
+            string time_diff = string.Format("-{0:F0}m", (DateTime.Now - last_run).TotalMinutes); // @"startOfDay(""-100"")";
+
+
+
+            string str_status = @"""" + String.Join(@""", """, status) + @"""";
+            string str_fields = String.Join(", ", fields);
+
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}", 
+                Properties.Settings.Default.JIRA_API, 
+                project,
+                str_status,
+                str_fields,
+                num_results,
+                time_diff);
+
+            Clipboard.SetText(request);
+
+            var webRequest = WebRequest.Create(request);
+
+            
+            
 
             #region
             string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
@@ -65,30 +100,52 @@ namespace JIRA_Printer
             webRequest.Headers.Add("Authorization", authorization);
 
             dynamic d;
-            var response = (HttpWebResponse)webRequest.GetResponse();
-
-            using (Stream responseStream = response.GetResponseStream())
+            try
             {
-                if (responseStream != null)
+                var response = (HttpWebResponse)webRequest.GetResponse();
+
+
+
+
+                using (Stream responseStream = response.GetResponseStream())
                 {
-
-                    //responseStream.CopyTo(memoryStream);
-                    String responseString = new StreamReader(responseStream).ReadToEnd();
-
-                    //Clipboard.SetText(responseString);
-                    //Result =  new JavaScriptSerializer().Deserialize<JIRAResult>(responseString);
-
-                    d = Json.Decode(responseString);
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var issue in d.issues)
+                    if (responseStream != null)
                     {
-                        // this apparently works
-                        sb.AppendFormat("{0} - Summary: {1}\r\n", issue.key , issue.fields.summary);
+
+                        //responseStream.CopyTo(memoryStream);
+                        String responseString = new StreamReader(responseStream).ReadToEnd();
+
+                        //Clipboard.SetText(responseString);
+                        //Result =  new JavaScriptSerializer().Deserialize<JIRAResult>(responseString);
+
+                        d = Json.Decode(responseString);
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var issue in d.issues)
+                        {
+                            // this apparently works
+                            sb.AppendFormat("{0} - Summary: {1}\r\n", issue.key, issue.fields.summary);
+                        }
+                        MessageBox.Show(sb.ToString(), "Dynamic is awesome!");
+
+                        if (d.total > 0)
+                        {
+
+                            Properties.Settings.Default.LAST_QUERY = DateTime.Now;
+
+                            Properties.Settings.Default.Save();
+                        }
                     }
-                    MessageBox.Show(sb.ToString(), "Dynamic is awesome!");
+
                 }
 
+                
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+
+            }
+
 
 
 
