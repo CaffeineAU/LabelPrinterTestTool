@@ -1,9 +1,15 @@
 ﻿using SENOR_LIB;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
+using Svg;
+using System.Drawing.Imaging;
 
 namespace JIRA_Printer
 {
@@ -22,6 +28,9 @@ namespace JIRA_Printer
 
             int line_width = 42;
 
+
+
+
             DrawLine(line_width);
             //Feed(2);
             FontXMultiplier = 2;
@@ -34,6 +43,8 @@ namespace JIRA_Printer
             DrawLine(line_width);
             //Feed(1);
             WriteAsciiString("Component:\t" + t.Component);
+            DownloadAndPrintImage(t.Source.fields.status.iconUrl);
+            WriteAsciiString("Status:\t" + t.Status);
             //Feed(1);
             WriteAsciiString("Summary:\t" + t.Summary);
             //Feed(1);
@@ -52,6 +63,30 @@ namespace JIRA_Printer
             //Feed(5);
 
             Cut();
+        }
+
+        private void DownloadAndPrintImage(string URL)
+        {
+            Guid temp = Guid.NewGuid();
+            using (WebClient wc = new WebClient())
+            {
+                string authorization = "Basic " + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword)));
+
+                wc.Headers.Add("Authorization", authorization);
+
+                wc.DownloadFile(URL, String.Format("{0}{1}.png", Path.GetTempPath(), temp));
+                if (File.ReadAllText(String.Format("{0}{1}.png", Path.GetTempPath(), temp)).StartsWith("<?xml")) // it's an SVG file
+                {
+                    var svgDocument = SvgDocument.Open(String.Format("{0}{1}.png", Path.GetTempPath(), temp));
+                    var bitmap = svgDocument.Draw(48, 48);
+                    bitmap.Save(String.Format("{0}{1}.png", Path.GetTempPath(), temp), ImageFormat.Png);
+                }
+            }
+
+
+            PrintBitImage(GetBitmapData(String.Format("{0}{1}.png", Path.GetTempPath(), temp)));
+            File.Delete(String.Format("{0}{1}.png", Path.GetTempPath(), temp));
+
         }
 
         private void DrawLine(int line_width)

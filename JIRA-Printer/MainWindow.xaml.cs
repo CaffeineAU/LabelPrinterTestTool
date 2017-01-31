@@ -247,7 +247,7 @@ namespace JIRA_Printer
                 num_results,
                 time_diff);
 
-            //Clipboard.SetText(request);
+            Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
 
@@ -271,6 +271,12 @@ namespace JIRA_Printer
                     {
 
                         String responseString = new StreamReader(responseStream).ReadToEnd();
+
+                        // Cheating
+                        responseString = responseString.Replace("48x48", "_48x48");
+                        responseString = responseString.Replace("32x32", "_32x32");
+                        responseString = responseString.Replace("24x24", "_24x24");
+                        responseString = responseString.Replace("16x16", "_16x16");
 
                         d = Json.Decode(responseString);
 
@@ -336,96 +342,97 @@ namespace JIRA_Printer
     }
 
 
-    // public class JIRAResult
-    // {
-    //     /*
-    //      * {"expand":"names,schema","startAt":0,"maxResults":1,"total":114,"issues":[
-    //      * {"expand":"operations,versionedRepresentations,editmeta,changelog,renderedFields","id":"73389","self":"http://jirapd.corp.resmed.org/rest/api/2/issue/73389",
-    //      * "key":"MTE-1053","fields":{"summary":"Support BC file","progress":{"progress":28800,"total":86400,"percent":33},
-    //      * "assignee":{"self":"http://jirapd.corp.resmed.org/rest/api/2/user?username=bishoyb","name":"bishoyb","key":"bishoyb","emailAddress":"Bishoy.Botros@resmed.com.au",
-    //      * "avatarUrls":{"48x48":"http://jirapd.corp.resmed.org/secure/useravatar?avatarId=10109","24x24":"http://jirapd.corp.resmed.org/secure/useravatar?size=small&avatarId=10109","16x16":"http://jirapd.corp.resmed.org/secure/useravatar?size=xsmall&avatarId=10109","32x32":"http://jirapd.corp.resmed.org/secure/useravatar?size=medium&avatarId=10109"},
-    //      * "displayName":"Bishoy Botros","active":true,"timeZone":"Australia/Sydney"},
-    //      * "duedate":null,
-    //      * "status":{"self":"http://jirapd.corp.resmed.org/rest/api/2/status/3","description":"This issue is being actively worked on at the moment by the assignee.","iconUrl":"http://jirapd.corp.resmed.org/images/icons/statuses/inprogress.png",
-    //      * "name":"In Progress","id":"3","statusCategory":{"self":"http://jirapd.corp.resmed.org/rest/api/2/statuscategory/4","id":4,"key":"indeterminate","colorName":"yellow","name":"In Progress"}}}}]}
-    //      */
+    //public class JIRAResult
+    //{
+    //    /*
+    //     * {"expand":"names,schema","startAt":0,"maxResults":1,"total":114,"issues":[
+    //     * {"expand":"operations,versionedRepresentations,editmeta,changelog,renderedFields","id":"73389","self":"http://jirapd.corp.resmed.org/rest/api/2/issue/73389",
+    //     * "key":"MTE-1053","fields":{"summary":"Support BC file","progress":{"progress":28800,"total":86400,"percent":33},
+    //     * "assignee":{"self":"http://jirapd.corp.resmed.org/rest/api/2/user?username=bishoyb","name":"bishoyb","key":"bishoyb","emailAddress":"Bishoy.Botros@resmed.com.au",
+    //     * "avatarUrls":{"48x48":"http://jirapd.corp.resmed.org/secure/useravatar?avatarId=10109","24x24":"http://jirapd.corp.resmed.org/secure/useravatar?size=small&avatarId=10109","16x16":"http://jirapd.corp.resmed.org/secure/useravatar?size=xsmall&avatarId=10109","32x32":"http://jirapd.corp.resmed.org/secure/useravatar?size=medium&avatarId=10109"},
+    //     * "displayName":"Bishoy Botros","active":true,"timeZone":"Australia/Sydney"},
+    //     * "duedate":null,
+    //     * "status":{"self":"http://jirapd.corp.resmed.org/rest/api/2/status/3","description":"This issue is being actively worked on at the moment by the assignee.","iconUrl":"http://jirapd.corp.resmed.org/images/icons/statuses/inprogress.png",
+    //     * "name":"In Progress","id":"3","statusCategory":{"self":"http://jirapd.corp.resmed.org/rest/api/2/statuscategory/4","id":4,"key":"indeterminate","colorName":"yellow","name":"In Progress"}}}}]}
+    //     */
 
-    //     public String expand { get; set; }
-    //     public String startAt { get; set; }
-    //     public String maxResults { get; set; }
-    //     public String total { get; set; }
-    //     public JIRAIssue[] issues { get; set; }
+    //    public String expand { get; set; }
+    //    public String startAt { get; set; }
+    //    public String maxResults { get; set; }
+    //    public String total { get; set; }
+    //    public JIRAIssue[] issues { get; set; }
 
-    // }
-
-    // public class JIRAIssue
-    // {
-    //     public String expand { get; set; }
-
-    //     public int id { get; set; }
-
-    //     public Uri self { get; set; }
-    //     public String key { get; set; }
-    //     public JIRAField fields { get; set; }
-    // }
-    // public class JIRAField
-    // {
-    //     public String summary { get; set; }
-
-    //     public JIRAProgress progress { get; set; }
-
-    //     public JIRAAssignee assignee { get; set; }
-    //     public String duedate { get; set; }
-    //     public JIRAStatus status { get; set; }
-
-    // }
-
-    // public class JIRAStatus
-    // {
-    //     public Uri self { get; set; }
-    //     public String description { get; set; }
-    //      public Uri iconUrl { get; set; }
-    //     public String name { get; set; }
-    //     public int id { get; set; }
-    //     public JIRAStatusCategory statusCategory { get; set; }
     //}
 
-    // public class JIRAStatusCategory
-    // {
-    //     public Uri self { get; set; }
-    //     public int id { get; set; }
-    //     public String key { get; set; }
-    //     public String colorName { get; set; }
-    //     public String name { get; set; }
+    //public class JIRAIssue
+    //{
+    //    public String expand { get; set; }
 
-    // }
+    //    public int id { get; set; }
 
-    // public class JIRAAssignee
-    // {
-    //     public Uri self { get; set; }
-    //     public String name { get; set; }
-    //     public String key { get; set; }
-    //     public String emailAddress { get; set; }
+    //    public Uri self { get; set; }
+    //    public String key { get; set; }
+    //    public JIRAField fields { get; set; }
+    //}
+    //public class JIRAField
+    //{
+    //    public String summary { get; set; }
 
-    //     public JIRAAvatarURL avatarUrls { get; set; }
-    //     public String displayName { get; set; }
-    //     public String active { get; set; }
-    //     public String timeZone { get; set; }
-    // }
+    //    public JIRAProgress progress { get; set; }
 
-    // public class JIRAAvatarURL
-    // {
-    //     public Uri _48x48 { get; set; }
-    //     public Uri _24x24 { get; set; }
-    //     public Uri _16x16 { get; set; }
-    //     public Uri _32x32 { get; set; }
-    // }
+    //    public JIRAAssignee assignee { get; set; }
+    //    public String duedate { get; set; }
+    //    public JIRAStatus status { get; set; }
 
-    // public class JIRAProgress
-    // {
-    //     public int progress { get; set; }
-    //     public int total { get; set; }
-    //     public int percent { get; set; }
-    // }
+    //}
+
+    //public class JIRAStatus
+    //{
+    //    public Uri self { get; set; }
+    //    public String description { get; set; }
+    //    public Uri iconUrl { get; set; }
+    //    public String name { get; set; }
+    //    public int id { get; set; }
+    //    public JIRAStatusCategory statusCategory { get; set; }
+    //}
+
+    //public class JIRAStatusCategory
+    //{
+    //    public Uri self { get; set; }
+    //    public int id { get; set; }
+    //    public String key { get; set; }
+    //    public String colorName { get; set; }
+    //    public String name { get; set; }
+
+    //}
+
+    //public class JIRAAssignee
+    //{
+    //    public Uri self { get; set; }
+    //    public String name { get; set; }
+    //    public String key { get; set; }
+    //    public String emailAddress { get; set; }
+
+    //    public JIRAAvatarURL avatarUrls { get; set; }
+    //    public String displayName { get; set; }
+    //    public String active { get; set; }
+    //    public String timeZone { get; set; }
+    //}
+
+    //public class JIRAAvatarURL
+    //{
+
+    //    public Uri _48x48 { get; set; }
+    //    public Uri _24x24 { get; set; }
+    //    public Uri _16x16 { get; set; }
+    //    public Uri _32x32 { get; set; }
+    //}
+
+    //public class JIRAProgress
+    //{
+    //    public int progress { get; set; }
+    //    public int total { get; set; }
+    //    public int percent { get; set; }
+    //}
 }
 

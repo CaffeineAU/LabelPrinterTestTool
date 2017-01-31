@@ -485,10 +485,10 @@ namespace SENOR_LIB
             WriteCommand(0x0c);
         }
 
-        public void PrintBitImage()
+        public void PrintBitImage(BitmapData image)
         {
-            byte[] image = GetLogo(@"alien.bmp");
-            printer.GetStream().Write(image, 0, image.Length);
+            byte[] byteimage = GetLogo(image);
+            printer.GetStream().Write(byteimage, 0, byteimage.Length);
         }
 
         public void Reset()
@@ -576,14 +576,10 @@ namespace SENOR_LIB
             }
         }
 
-        public byte[] GetLogo(string file)
+        public byte[] GetLogo(BitmapData data)
         {
             //http://stackoverflow.com/questions/14099239/printing-a-bit-map-image-to-pos-printer-via-comport-in-c-sharp
 
-            string logo = "";
-            if (!File.Exists(file))
-                return null;
-            BitmapData data = GetBitmapData(file);
             BitArray dots = data.Dots;
             byte[] width = BitConverter.GetBytes(data.Width);
 
@@ -643,7 +639,7 @@ namespace SENOR_LIB
             return bytes;
         }
 
-        private static BitmapData GetBitmapData(string bmpFileName)
+        public static BitmapData GetBitmapData(string bmpFileName)
         {
             using (var bitmap = (Bitmap)Bitmap.FromFile(bmpFileName))
             {

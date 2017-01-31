@@ -13,11 +13,14 @@ namespace JIRA_Printer
             Key = d.key ?? "None";
             Component = "Not implemented";
             Summary = d.fields.summary ?? "None";
-
+            Status = d.fields.status.name;
+            Source = d;
             if (d.fields.assignee != null)
             {
                 Assignee = d.fields.assignee.displayName ?? "None";
             }
+
+            
 
             DueDate = d.fields.duedate ?? "None";
 
@@ -30,6 +33,14 @@ namespace JIRA_Printer
         public override string ToString()
         {
             return string.Format("{0} - Summary: {1}\r\n", Key, Summary);
+        }
+
+        private dynamic source;
+
+        public dynamic Source
+        {
+            get { return source; }
+            set { source = value; }
         }
 
 

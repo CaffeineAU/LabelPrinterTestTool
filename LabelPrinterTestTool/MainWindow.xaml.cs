@@ -161,7 +161,7 @@ namespace LabelPrinterTestTool
 
         private void Imagebutton_Click(object sender, RoutedEventArgs e)
         {
-            Printer.PrintBitImage();
+            Printer.PrintBitImage(GTP_250.GetBitmapData(@"test.png"));
         }
     }
 }
