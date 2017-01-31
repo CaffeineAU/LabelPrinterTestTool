@@ -487,7 +487,8 @@ namespace SENOR_LIB
 
         public void PrintBitImage()
         {
-            WriteAsciiString(GetLogo(@"hi5.bmp"));
+            byte[] image = GetLogo(@"alien.bmp");
+            printer.GetStream().Write(image, 0, image.Length);
         }
 
         public void Reset()
@@ -575,7 +576,7 @@ namespace SENOR_LIB
             }
         }
 
-        public string GetLogo(string file)
+        public byte[] GetLogo(string file)
         {
             //http://stackoverflow.com/questions/14099239/printing-a-bit-map-image-to-pos-printer-via-comport-in-c-sharp
 
@@ -639,29 +640,23 @@ namespace SENOR_LIB
 
             bw.Flush();
             byte[] bytes = stream.ToArray();
-            return logo + Encoding.Default.GetString(bytes);
+            return bytes;
         }
 
-        public BitmapData GetBitmapData(string bmpFileName)
+        private static BitmapData GetBitmapData(string bmpFileName)
         {
             using (var bitmap = (Bitmap)Bitmap.FromFile(bmpFileName))
             {
                 var threshold = 127;
                 var index = 0;
-                double multiplier = 570; // this depends on your printer model. for Beiyang you should use 1000
-                double scale = (double)(multiplier / (double)bitmap.Width);
-                int xheight = (int)(bitmap.Height * scale);
-                int xwidth = (int)(bitmap.Width * scale);
-                var dimensions = xwidth * xheight;
+                var dimensions = bitmap.Width * bitmap.Height;
                 var dots = new BitArray(dimensions);
 
-                for (var y = 0; y < xheight; y++)
+                for (var y = 0; y < bitmap.Height; y++)
                 {
-                    for (var x = 0; x < xwidth; x++)
+                    for (var x = 0; x < bitmap.Width; x++)
                     {
-                        var _x = (int)(x / scale);
-                        var _y = (int)(y / scale);
-                        var color = bitmap.GetPixel(_x, _y);
+                        var color = bitmap.GetPixel(x, y);
                         var luminance = (int)(color.R * 0.3 + color.G * 0.59 + color.B * 0.11);
                         dots[index] = (luminance < threshold);
                         index++;
@@ -671,8 +666,8 @@ namespace SENOR_LIB
                 return new BitmapData()
                 {
                     Dots = dots,
-                    Height = (int)(bitmap.Height * scale),
-                    Width = (int)(bitmap.Width * scale)
+                    Height = bitmap.Height,
+                    Width = bitmap.Width
                 };
             }
         }
