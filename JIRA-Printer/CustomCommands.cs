@@ -54,5 +54,27 @@ namespace JIRA_Printer.Commands
                 }
         );
 
+        public static readonly RoutedUICommand ShowIssuesCommand = new RoutedUICommand
+        (
+                "ShowIssuesCommand",
+                "ShowIssuesCommand",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.S, ModifierKeys.Control)
+                }
+        );
+
+        public static readonly RoutedUICommand PrintIssuesCommand = new RoutedUICommand
+        (
+                "PrintIssuesCommand",
+                "PrintIssuesCommand",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.S, ModifierKeys.Control)
+                }
+        );
+
     }
 }

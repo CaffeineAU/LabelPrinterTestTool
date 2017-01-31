@@ -6,27 +6,25 @@ using System.Threading.Tasks;
 
 namespace JIRA_Printer
 {
-    class Ticket
+    public class Ticket
     {
         public Ticket(dynamic d)
         {
-            Key = d.key;
+            Key = d.key ?? "None";
             Component = "Not implemented";
-            Summary = d.fields.summary;
+            Summary = d.fields.summary ?? "None";
 
-            Assignee = d.fields.assignee.displayName;
-
-            DueDate = d.fields.duedate;
-
-            try
+            if (d.fields.assignee != null)
             {
-                Progress = Int32.Parse(d.fields.progress.percent);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                Assignee = d.fields.assignee.displayName ?? "None";
             }
 
+            DueDate = d.fields.duedate ?? "None";
+
+            if (d.fields.progress != null && d.fields.progress.percent != null)
+            {
+                Progress = (int)(d.fields.progress.percent);
+            }
         }
 
         public override string ToString()

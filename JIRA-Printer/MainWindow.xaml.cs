@@ -37,17 +37,17 @@ namespace JIRA_Printer
         }
 
 
-        //private JIRAResult  result;
+        private ObservableCollection<Ticket> result = new ObservableCollection<Ticket>();
 
-        //public JIRAResult Result
-        //{
-        //    get { return result; }
-        //    set
-        //    {
-        //        result = value;
-        //        OnPropertyChanged("Result");
-        //    }
-        //}
+        public ObservableCollection<Ticket> Result
+        {
+            get { return result; }
+            set
+            {
+                result = value;
+                OnPropertyChanged("Result");
+            }
+        }
 
         private ObservableCollection<String> issueStatuses = new ObservableCollection<string>();
 
@@ -65,7 +65,18 @@ namespace JIRA_Printer
             }
         }
 
-        
+        private string issueTimePeriod = "1d";
+
+        public string IssueTimePeriod
+        {
+            get { return issueTimePeriod; }
+            set
+            {
+                issueTimePeriod = value;
+                OnPropertyChanged("IssueTimePeriod");
+            }
+        }
+
 
         private void RegeneratePropertiesAndSave()
         {
@@ -152,94 +163,11 @@ namespace JIRA_Printer
         }
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            Console.WriteLine("Tick");
 
-            string project = "MTE";
-            int num_results = 100;
-
-
-            DateTime last_run = Properties.Settings.Default.LAST_QUERY;
-
-
-            //this needs to be equal to the "tick" time
-            string time_diff = string.Format("-{0:F0}m", Math.Max((DateTime.Now - last_run).TotalMinutes, 1)); // @"startOfDay(""-100"")";
-
-
-
-            string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
-            string str_fields = String.Join(", ", IssueFields);
-
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}",
-                Properties.Settings.Default.JIRA_API,
-                project,
-                str_status,
-                str_fields,
-                num_results,
-                time_diff);
-
-            //Clipboard.SetText(request);
-
-            var webRequest = WebRequest.Create(request);
-
-
-
-
-            #region
-            string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
-            #endregion
-
-            webRequest.Headers.Add("Authorization", authorization);
-
-            dynamic d;
-            try
-            {
-                var response = (HttpWebResponse)webRequest.GetResponse();
-
-                using (Stream responseStream = response.GetResponseStream())
-                {
-                    if (responseStream != null)
-                    {
-
-                        String responseString = new StreamReader(responseStream).ReadToEnd();
-
-                        d = Json.Decode(responseString);
-
-                        //bool flag = false;
-                        foreach (var issue in d.issues)
-                        {
-                            Ticket t = new Ticket(issue);
-
-                            Console.WriteLine(t.ToString());
-
-                            printer.PrintTicket(t);
-
-                            //flag = true;
-                        }
-
-                        //if (d.issues.Length > 0) //is there a way to count d.issues?
-                        //{
-                        //    Properties.Settings.Default.LAST_QUERY = DateTime.Now;
-
-                        //    Properties.Settings.Default.Save();
-                        //}
-                        Properties.Settings.Default.LAST_QUERY = DateTime.Now;
-
-                        Properties.Settings.Default.Save();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-
-            }
-
-
-            
 
         }
 
-        
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(String name)
@@ -287,9 +215,123 @@ namespace JIRA_Printer
             IssueFields.RemoveAt(FieldslistBox.SelectedIndex);
         }
 
+        private void ShowIssuesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod);
+        }
+
+        private void ShowIssuesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Result.Clear();
+
+            string project = "MTE";
+            int num_results = 100;
+
+
+            DateTime last_run = Properties.Settings.Default.LAST_QUERY;
+
+
+            //this needs to be equal to the "tick" time
+            string time_diff = string.Format("-{0}", IssueTimePeriod);
+
+
+
+            string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
+            string str_fields = String.Join(", ", IssueFields);
+
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}",
+                Properties.Settings.Default.JIRA_API,
+                project,
+                str_status,
+                str_fields,
+                num_results,
+                time_diff);
+
+            //Clipboard.SetText(request);
+
+            var webRequest = WebRequest.Create(request);
+
+
+
+
+            #region
+            string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
+            #endregion
+
+            webRequest.Headers.Add("Authorization", authorization);
+
+            dynamic d;
+            try
+            {
+                var response = (HttpWebResponse)webRequest.GetResponse();
+
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    if (responseStream != null)
+                    {
+
+                        String responseString = new StreamReader(responseStream).ReadToEnd();
+
+                        d = Json.Decode(responseString);
+
+                        //bool flag = false;
+                        foreach (var issue in d.issues)
+                        {
+                            Result.Add(new Ticket(issue));
+
+                            //Console.WriteLine(t.ToString());
+
+                            //printer.PrintTicket(t);
+
+                            //flag = true;
+                        }
+
+
+                        //if (d.issues.Length > 0) //is there a way to count d.issues?
+
+                        //{
+                        //    Properties.Settings.Default.LAST_QUERY = DateTime.Now;
+
+                        //    Properties.Settings.Default.Save();
+                        //}
+                        Properties.Settings.Default.LAST_QUERY = DateTime.Now;
+
+                        Properties.Settings.Default.Save();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+
+            }
+
+
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             printer.Disconnect();
+        }
+
+        private void PrintIssuesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod);
+        }
+
+        private void PrintIssuesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            foreach (var issue in Result)
+            {
+                //Result.Add(new Ticket(issue));
+
+                //Console.WriteLine(t.ToString());
+
+                printer.PrintTicket(issue);
+
+                //flag = true;
+            }
+
         }
     }
 

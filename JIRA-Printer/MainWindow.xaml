@@ -13,20 +13,24 @@
         <CommandBinding x:Uid="RemoveStatusCommand" Command="self:CustomCommands.RemoveStatusCommand" Executed="RemoveStatusCommand_Executed" CanExecute="RemoveStatusCommand_CanExecute" />
         <CommandBinding x:Uid="AddFieldCommand" Command="self:CustomCommands.AddFieldCommand" Executed="AddFieldCommand_Executed" CanExecute="AddFieldCommand_CanExecute" />
         <CommandBinding x:Uid="RemoveFieldCommand" Command="self:CustomCommands.RemoveFieldCommand" Executed="RemoveFieldCommand_Executed" CanExecute="RemoveFieldCommand_CanExecute" />
+        <CommandBinding x:Uid="ShowIssuesCommand" Command="self:CustomCommands.ShowIssuesCommand" Executed="ShowIssuesCommand_Executed" CanExecute="ShowIssuesCommand_CanExecute" />
+        <CommandBinding x:Uid="PrintIssuesCommand" Command="self:CustomCommands.PrintIssuesCommand" Executed="PrintIssuesCommand_Executed" CanExecute="PrintIssuesCommand_CanExecute" />
     </Window.CommandBindings>
 
     <Grid Grid.IsSharedSizeScope="True">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="400"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="300" SharedSizeGroup="Rows"/>
+            <RowDefinition Height="60" SharedSizeGroup="Buttons"/>
             <RowDefinition SharedSizeGroup="Rows"/>
+            <RowDefinition SharedSizeGroup="Buttons"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result.issues}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Stretch" Grid.Row="2" Grid.ColumnSpan="4">
+        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2">
             <!--<DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
@@ -38,23 +42,25 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>-->
         </DataGrid>
-        <Label Content="Statuses" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top" Grid.Row="0" />
-        <Label Content="Fields" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Top" Grid.Row="1" />
+        <Label Content="Statuses" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" Grid.Row="0" />
+        <Label Content="Fields" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" Grid.Row="2" />
         <ListBox x:Name="StatuslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueStatuses}"  Margin="10" VerticalAlignment="Stretch" />
-        <ListBox x:Name="FieldslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueFields}"  Margin="10" VerticalAlignment="Stretch" Grid.Row="1" />
-        <StackPanel Grid.Column="2" Orientation="Vertical">
-            <Button x:Name="removestatusbutton" Content="Remove Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top"  Command="self:CustomCommands.RemoveStatusCommand" />
-            <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="newstatus" Width="150" Margin="10" />
-                <Button x:Name="addstatusbutton" Content="Add Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Command="self:CustomCommands.AddStatusCommand" />
-            </StackPanel>
+        <ListBox x:Name="FieldslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueFields}"  Margin="10,10,10,74" VerticalAlignment="Stretch" Grid.Row="2" Grid.RowSpan="2" />
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+            <TextBox x:Name="newstatus" Width="150" Margin="10" />
+            <Button x:Name="addstatusbutton" Content="Add Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.AddStatusCommand" />
+            <Button x:Name="removestatusbutton" Content="Remove Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.RemoveStatusCommand" />
         </StackPanel>
-        <StackPanel Grid.Column="2" Orientation="Vertical" Grid.Row="1">
-            <Button x:Name="removeFieldbutton" Content="Remove Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top"  Command="self:CustomCommands.RemoveFieldCommand" />
-            <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="newField" Width="150" Margin="10" />
-                <Button x:Name="addFieldbutton" Content="Add Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Command="self:CustomCommands.AddFieldCommand" />
-            </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" >
+            <TextBox x:Name="newField" Width="150" Margin="10" />
+            <Button x:Name="addFieldbutton" Content="Add Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.AddFieldCommand" />
+            <Button x:Name="removeFieldbutton" Content="Remove Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.RemoveFieldCommand"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2" >
+            <Label Content="Issues from the last " VerticalContentAlignment="Center"/>
+            <TextBox  Width="50" Margin="10" VerticalContentAlignment="Center" Text="{Binding Path=IssueTimePeriod}" />
+            <Button  Content="Show Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.ShowIssuesCommand" />
+            <Button  Content="Print Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.PrintIssuesCommand"/>
         </StackPanel>
     </Grid>
 </Window>
