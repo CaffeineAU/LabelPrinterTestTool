@@ -32,5 +32,27 @@ namespace JIRA_Printer.Commands
                 }
         );
 
+        public static readonly RoutedUICommand AddFieldCommand = new RoutedUICommand
+        (
+                "AddFieldCommand",
+                "AddFieldCommand",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.A, ModifierKeys.Control)
+                }
+        );
+
+        public static readonly RoutedUICommand RemoveFieldCommand = new RoutedUICommand
+        (
+                "RemoveFieldCommand",
+                "RemoveFieldCommand",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.R, ModifierKeys.Control)
+                }
+        );
+
     }
 }

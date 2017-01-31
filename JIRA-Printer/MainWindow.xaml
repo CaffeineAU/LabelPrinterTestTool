@@ -11,6 +11,8 @@
     <Window.CommandBindings>
         <CommandBinding x:Uid="AddStatusCommand" Command="self:CustomCommands.AddStatusCommand" Executed="AddStatusCommand_Executed" CanExecute="AddStatusCommand_CanExecute" />
         <CommandBinding x:Uid="RemoveStatusCommand" Command="self:CustomCommands.RemoveStatusCommand" Executed="RemoveStatusCommand_Executed" CanExecute="RemoveStatusCommand_CanExecute" />
+        <CommandBinding x:Uid="AddFieldCommand" Command="self:CustomCommands.AddFieldCommand" Executed="AddFieldCommand_Executed" CanExecute="AddFieldCommand_CanExecute" />
+        <CommandBinding x:Uid="RemoveFieldCommand" Command="self:CustomCommands.RemoveFieldCommand" Executed="RemoveFieldCommand_Executed" CanExecute="RemoveFieldCommand_CanExecute" />
     </Window.CommandBindings>
 
     <Grid Grid.IsSharedSizeScope="True">
@@ -41,12 +43,17 @@
         <ListBox x:Name="StatuslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueStatuses}"  Margin="10" VerticalAlignment="Stretch" />
         <ListBox x:Name="FieldslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueFields}"  Margin="10" VerticalAlignment="Stretch" Grid.Row="1" />
         <StackPanel Grid.Column="2" Orientation="Vertical">
-            <Button x:Name="removestatusbutton" Content="Remove Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top"  Command="self:CustomCommands.RemoveStatusCommand" >
-          </Button>
+            <Button x:Name="removestatusbutton" Content="Remove Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top"  Command="self:CustomCommands.RemoveStatusCommand" />
             <StackPanel Orientation="Horizontal">
                 <TextBox x:Name="newstatus" Width="150" Margin="10" />
-                <Button x:Name="addstatusbutton" Content="Add Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Command="self:CustomCommands.AddStatusCommand" >
-                </Button>
+                <Button x:Name="addstatusbutton" Content="Add Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Command="self:CustomCommands.AddStatusCommand" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Vertical" Grid.Row="1">
+            <Button x:Name="removeFieldbutton" Content="Remove Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top"  Command="self:CustomCommands.RemoveFieldCommand" />
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="newField" Width="150" Margin="10" />
+                <Button x:Name="addFieldbutton" Content="Add Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Command="self:CustomCommands.AddFieldCommand" />
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -22,15 +22,16 @@ namespace JIRA_Printer
 
             int line_width = 42;
 
-            string hr = "";
-            for(int i = 0; i < line_width; i++)
-            {
-                hr += "=";
-            }
-
-            WriteAsciiString(hr);
+            DrawLine(line_width);
             //Feed(2);
-            WriteAsciiString("Key:\t\t" + t.Key);
+            FontXMultiplier = 2;
+            FontYMultiplier = 2;
+            PrintPosition = 144; // 20mm
+            Emphasised = NumericOptions.One;
+            WriteAsciiString(t.Key);
+            Reset();
+
+            DrawLine(line_width);
             //Feed(1);
             WriteAsciiString("Component:\t" + t.Component);
             //Feed(1);
@@ -42,7 +43,7 @@ namespace JIRA_Printer
             //Feed(1);
             WriteAsciiString("Progress:\t" + t.Progress.ToString() + "%");
             //Feed(1);
-            WriteAsciiString(hr);
+            DrawLine(line_width);
 
             Feed(10);
 
@@ -53,5 +54,17 @@ namespace JIRA_Printer
             Cut();
         }
 
+        private void DrawLine(int line_width)
+        {
+            string hr = "";
+            for (int i = 0; i < line_width; i++)
+            {
+                hr += " ";
+            }
+
+            Underlined = NumericOptions.One;
+            WriteAsciiString(hr);
+            Underlined = NumericOptions.Zero;
+        }
     }
 }

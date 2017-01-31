@@ -61,12 +61,19 @@ namespace JIRA_Printer
                 {
                     Properties.Settings.Default.IssueStatuses = new System.Collections.Specialized.StringCollection();
                 }
-                Properties.Settings.Default.IssueStatuses.Clear();
-                Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
-                Properties.Settings.Default.Save();
-
                 OnPropertyChanged("IssueStatuses");
             }
+        }
+
+        
+
+        private void RegeneratePropertiesAndSave()
+        {
+            Properties.Settings.Default.IssueFields.Clear();
+            Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
+            Properties.Settings.Default.IssueStatuses.Clear();
+            Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
+            Properties.Settings.Default.Save();
         }
 
         private ObservableCollection<String> issueFields = new ObservableCollection<string>();
@@ -81,10 +88,6 @@ namespace JIRA_Printer
                 {
                     Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
                 }
-                Properties.Settings.Default.IssueFields.Clear();
-                Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
-                Properties.Settings.Default.Save();
-
                 OnPropertyChanged("IssueFields");
             }
         }
@@ -97,7 +100,7 @@ namespace JIRA_Printer
             InitializeComponent();
             this.DataContext = this;
 
-            
+
 
             printer = new TicketPrinter();
 
@@ -143,6 +146,8 @@ namespace JIRA_Printer
                 IssueFields = new ObservableCollection<String>(Properties.Settings.Default.IssueFields.Cast<string>().ToList());
             }
 
+            IssueStatuses.CollectionChanged += delegate { RegeneratePropertiesAndSave(); };
+            IssueFields.CollectionChanged += delegate { RegeneratePropertiesAndSave(); };
 
         }
         private void dispatcherTimer_Tick(object sender, EventArgs e)
@@ -172,7 +177,7 @@ namespace JIRA_Printer
                 num_results,
                 time_diff);
 
-            Clipboard.SetText(request);
+            //Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
 
@@ -199,7 +204,7 @@ namespace JIRA_Printer
 
                         d = Json.Decode(responseString);
 
-                        bool flag = false;
+                        //bool flag = false;
                         foreach (var issue in d.issues)
                         {
                             Ticket t = new Ticket(issue);
@@ -208,15 +213,18 @@ namespace JIRA_Printer
 
                             printer.PrintTicket(t);
 
-                            flag = true;
+                            //flag = true;
                         }
 
-                        if (flag) //is there a way to count d.issues?
-                        {
-                            Properties.Settings.Default.LAST_QUERY = DateTime.Now;
+                        //if (d.issues.Length > 0) //is there a way to count d.issues?
+                        //{
+                        //    Properties.Settings.Default.LAST_QUERY = DateTime.Now;
 
-                            Properties.Settings.Default.Save();
-                        }
+                        //    Properties.Settings.Default.Save();
+                        //}
+                        Properties.Settings.Default.LAST_QUERY = DateTime.Now;
+
+                        Properties.Settings.Default.Save();
                     }
                 }
             }
@@ -259,11 +267,32 @@ namespace JIRA_Printer
             IssueStatuses.RemoveAt(StatuslistBox.SelectedIndex);
         }
 
+        private void AddFieldCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrEmpty(newField.Text);
+        }
+
+        private void AddFieldCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            IssueFields.Add(newField.Text);
+        }
+
+        private void RemoveFieldCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = (IssueFields.Count > 0 && FieldslistBox.SelectedIndex >= 0);
+        }
+
+        private void RemoveFieldCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            IssueFields.RemoveAt(FieldslistBox.SelectedIndex);
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             printer.Disconnect();
         }
     }
+
 
     // public class JIRAResult
     // {
