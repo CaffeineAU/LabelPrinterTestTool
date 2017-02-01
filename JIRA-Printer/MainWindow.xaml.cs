@@ -29,13 +29,11 @@ namespace JIRA_Printer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         public static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
         }
-
 
         private ObservableCollection<Ticket> result = new ObservableCollection<Ticket>();
 
@@ -77,7 +75,6 @@ namespace JIRA_Printer
             }
         }
 
-
         private void RegeneratePropertiesAndSave()
         {
             Properties.Settings.Default.IssueFields.Clear();
@@ -105,27 +102,14 @@ namespace JIRA_Printer
 
         TicketPrinter printer;
 
-
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = this;
 
-
             printer = new TicketPrinter();
-
-
             printer.FindPrinter();
-
             printer.Connect();
-
-
-//            printer.PrintBitImage(GTP_250.GetBitmapData(@"test.png"));
-
-            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += dispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
-            dispatcherTimer.Start();
 
             // do this once, to create the .settings file
             if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
@@ -140,7 +124,6 @@ namespace JIRA_Printer
                 Properties.Settings.Default.IssueStatuses = new System.Collections.Specialized.StringCollection();
                 Properties.Settings.Default.IssueStatuses.AddRange(IssueStatuses.ToArray());
                 Properties.Settings.Default.Save();
-
             }
             else
             {
@@ -153,7 +136,6 @@ namespace JIRA_Printer
                 Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
                 Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
                 Properties.Settings.Default.Save();
-
             }
             else
             {
@@ -164,13 +146,6 @@ namespace JIRA_Printer
             IssueFields.CollectionChanged += delegate { RegeneratePropertiesAndSave(); };
 
         }
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
-        {
-
-
-        }
-
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(String name)
@@ -230,32 +205,20 @@ namespace JIRA_Printer
             string project = "MTE";
             int num_results = 100;
 
-
-            DateTime last_run = Properties.Settings.Default.LAST_QUERY;
-
-
-            //this needs to be equal to the "tick" time
-            string time_diff = string.Format("-{0}", IssueTimePeriod);
-
-
-
             string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
             string str_fields = String.Join(", ", IssueFields);
 
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>={5})&startAt=0&maxResults={4}&fields={3}",
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>=-{5})&startAt=0&maxResults={4}&fields={3}",
                 Properties.Settings.Default.JIRA_API,
                 project,
                 str_status,
                 str_fields,
                 num_results,
-                time_diff);
+                IssueTimePeriod);
 
-            Clipboard.SetText(request);
+            //Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
-
-
-
 
             #region
             string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
@@ -275,7 +238,7 @@ namespace JIRA_Printer
 
                         String responseString = new StreamReader(responseStream).ReadToEnd();
 
-                        // Cheating
+                        // Cheating :-)
                         responseString = responseString.Replace("48x48", "_48x48");
                         responseString = responseString.Replace("32x32", "_32x32");
                         responseString = responseString.Replace("24x24", "_24x24");
@@ -283,36 +246,23 @@ namespace JIRA_Printer
 
                         d = Json.Decode(responseString);
 
-                        //bool flag = false;
                         foreach (var issue in d.issues)
                         {
-                            Result.Add(new Ticket { Key = issue.key ?? "None",
+                            Result.Add(new Ticket
+                            {
+                                Key = issue.key ?? "None",
                                 Component = "Not implemented",
                                 Summary = issue.fields.summary ?? "None",
                                 Status = issue.fields.status.name,
-                                Source = issue,
+                                StatusIcon = issue.fields.status.iconUrl,
+                                Updated = issue.fields.updated,
+                                //Source = issue,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = issue.fields.duedate ?? "None",
                                 Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0
                             });
-
-                            //Console.WriteLine(t.ToString());
-
-                            //printer.PrintTicket(t);
-
-                            //flag = true;
                         }
-
-
-                        //if (d.issues.Length > 0) //is there a way to count d.issues?
-
-                        //{
-                        //    Properties.Settings.Default.LAST_QUERY = DateTime.Now;
-
-                        //    Properties.Settings.Default.Save();
-                        //}
-                        Properties.Settings.Default.LAST_QUERY = DateTime.Now;
-
+                        Properties.Settings.Default.LAST_QUERY = DateTime.Now; // Not actually used anymore
                         Properties.Settings.Default.Save();
                     }
                 }
@@ -320,10 +270,7 @@ namespace JIRA_Printer
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-
             }
-
-
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -336,7 +283,7 @@ namespace JIRA_Printer
 
         private void PrintIssuesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod);
+            e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod) && Result.Count > 0;
         }
 
         private void PrintIssuesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -347,6 +294,7 @@ namespace JIRA_Printer
 
                 tt.DownloadComplete += delegate (object sender2, DownloadEventArgs e2)
                 {
+                    // would be nicer to do this with a memory stream or something, rather than temporary files
                     printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName)));
                     File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
                     printer.Feed(8);

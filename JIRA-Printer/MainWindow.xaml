@@ -7,7 +7,7 @@
          xmlns:self="clr-namespace:JIRA_Printer.Commands"
 
         mc:Ignorable="d"
-        Title="MainWindow" Height="1024" Width="1280" FontSize="14" Closing="Window_Closing">
+        Title="MainWindow" Height="800" Width="1280" FontSize="14" Closing="Window_Closing">
     <Window.CommandBindings>
         <CommandBinding x:Uid="AddStatusCommand" Command="self:CustomCommands.AddStatusCommand" Executed="AddStatusCommand_Executed" CanExecute="AddStatusCommand_CanExecute" />
         <CommandBinding x:Uid="RemoveStatusCommand" Command="self:CustomCommands.RemoveStatusCommand" Executed="RemoveStatusCommand_Executed" CanExecute="RemoveStatusCommand_CanExecute" />
@@ -20,7 +20,7 @@
     <Grid Grid.IsSharedSizeScope="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -30,29 +30,26 @@
             <RowDefinition SharedSizeGroup="Buttons"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2">
-            <!--<DataGrid.Columns>
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:Uid="DataTemplate_1">
-                            <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=fields.assignee, RelativeSource={RelativeSource Self}}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Stretch"/>
-
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>-->
+        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2" RowHeaderWidth="25" AlternatingRowBackground="#FFE6F1F5" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" />
+                <DataGridTextColumn Header="Assignee" Binding="{Binding Path=Assignee}" />
+                <DataGridTextColumn Header="Summary" Binding="{Binding Path=Summary}" />
+                <DataGridTextColumn Header="Progress" Binding="{Binding Path=Progress}" />
+            </DataGrid.Columns>
         </DataGrid>
         <Label Content="Statuses" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" Grid.Row="0" />
         <Label Content="Fields" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" Grid.Row="2" />
         <ListBox x:Name="StatuslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueStatuses}"  Margin="10" VerticalAlignment="Stretch" />
         <ListBox x:Name="FieldslistBox" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=IssueFields}"  Margin="10,10,10,74" VerticalAlignment="Stretch" Grid.Row="2" Grid.RowSpan="2" />
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-            <TextBox x:Name="newstatus" Width="150" Margin="10" />
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBox x:Name="newstatus" Width="70" Margin="10" />
             <Button x:Name="addstatusbutton" Content="Add Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.AddStatusCommand" />
             <Button x:Name="removestatusbutton" Content="Remove Status" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.RemoveStatusCommand" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" >
-            <TextBox x:Name="newField" Width="150" Margin="10" />
+        <StackPanel Orientation="Horizontal" Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBox x:Name="newField" Width="80" Margin="10" />
             <Button x:Name="addFieldbutton" Content="Add Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.AddFieldCommand" />
             <Button x:Name="removeFieldbutton" Content="Remove Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.RemoveFieldCommand"/>
         </StackPanel>

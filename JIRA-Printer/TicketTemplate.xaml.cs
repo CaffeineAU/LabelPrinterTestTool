@@ -22,19 +22,20 @@ namespace JIRA_Printer
     /// </summary>
     public partial class TicketTemplate : Window, INotifyPropertyChanged
     {
-        bool canprint = false;
         private Ticket theTicket;
-        Guid temp = Guid.NewGuid();
 
         public Ticket TheTicket
         {
             get { return theTicket; }
-            set {
+            set
+            {
                 theTicket = value;
                 SourceImage.BeginInit();
-                SourceImage.UriSource = new Uri(TheTicket.Source.fields.status.iconUrl, UriKind.Absolute);
+                SourceImage.UriSource = new Uri(TheTicket.StatusIcon, UriKind.Absolute);
                 SourceImage.EndInit();
-                SourceImage.DownloadCompleted += delegate { canprint = true; ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), theTicket.Key), MainCanvas);
+                SourceImage.DownloadCompleted += delegate
+                {
+                    ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key), MainCanvas);
                     DownloadComplete?.Invoke(this, new DownloadEventArgs(TheTicket.Key));
                 };
 
@@ -45,14 +46,16 @@ namespace JIRA_Printer
 
         public BitmapImage SourceImage
         {
-            get { return sourceImage;
+            get
+            {
+                return sourceImage;
             }
             set
             {
                 sourceImage = value;
                 OnPropertyChanged("SourceImage");
-                }
             }
+        }
 
         public TicketTemplate()
         {
@@ -126,7 +129,7 @@ namespace JIRA_Printer
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Console.WriteLine("Converting {0} to {1}", value, (double)((int)value) * 350 / 100);
-            return value == null? 0 : (double)((int)value) * 300 / 100;
+            return value == null ? 0 : (double)((int)value) * 300 / 100;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -137,7 +140,7 @@ namespace JIRA_Printer
 
     public class DownloadEventArgs : EventArgs
     {
-        public string FileName{ get; private set; }
+        public string FileName { get; private set; }
 
         public DownloadEventArgs(string fileName)
         {

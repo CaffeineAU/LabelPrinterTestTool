@@ -14,12 +14,36 @@ namespace JIRA_Printer
             return string.Format("{0} - Summary: {1}\r\n", Key, Summary);
         }
 
-        private dynamic source;
+        //private dynamic source;
 
-        public dynamic Source
+        //public dynamic Source
+        //{
+        //    get { return source; }
+        //    set { source = value;}
+        //}
+
+        private string _Updated;
+
+        public string Updated
         {
-            get { return source; }
-            set { source = value;}
+            get { return _Updated; }
+            set
+            {
+                _Updated = value;
+                OnPropertyChanged("Updated");
+            }
+        }
+
+        private string _statusIcon;
+
+        public string StatusIcon
+        {
+            get { return _statusIcon; }
+            set
+            {
+                _statusIcon = value;
+                OnPropertyChanged("StatusIcon");
+            }
         }
 
 
