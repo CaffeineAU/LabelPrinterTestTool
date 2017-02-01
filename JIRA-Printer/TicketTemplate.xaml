@@ -5,16 +5,19 @@
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:local="clr-namespace:JIRA_Printer"
  mc:Ignorable="d"
-        FontSize="24"
- Title="TicketTemplate" Height="512" Width="512">
-    <Canvas  x:Name="MainCanvas" Width="512" Height="500" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
-        <Border BorderThickness="2" BorderBrush="Black" Margin="5">
+        FontSize="26"
+ Title="TicketTemplate" Height="550" Width="530">
+    <Window.Resources>
+        <local:ProgressConverter x:Key="TheProgressConverter" />
+    </Window.Resources>
+    <!--<Canvas  x:Name="MainCanvas" Width="512" Height="500" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">-->
+    <Border x:Name="MainCanvas" BorderThickness="3" Width="512" Height="500" BorderBrush="Black" Background="White" >
         <Grid Grid.IsSharedSizeScope="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Content="{Binding Path=TheTicket.Key}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" FontSize="60"/>
+            <Label Content="{Binding Path=TheTicket.Key}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" FontSize="60" FontWeight="Bold"/>
             <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
                 <Grid >
                     <Grid.RowDefinitions>
@@ -25,7 +28,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Component"/>
-                    <TextBlock Text="{Binding Path=TheTicket.Component}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Component}" TextWrapping="WrapWithOverflow" Grid.Column="1" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid >
                     <Grid.RowDefinitions>
@@ -36,7 +39,10 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Status"/>
-                    <TextBlock Text="{Binding Path=TheTicket.Status}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                        <Image Source="{Binding Path=SourceImage}" Height="40" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding Path=TheTicket.Status}" TextWrapping="WrapWithOverflow" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Grid>
                 <Grid >
                     <Grid.RowDefinitions>
@@ -47,7 +53,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Summary"/>
-                    <TextBlock Text="{Binding Path=TheTicket.Summary}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Summary}" TextWrapping="WrapWithOverflow" Grid.Column="1" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid >
                     <Grid.RowDefinitions>
@@ -58,7 +64,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Assignee"/>
-                    <TextBlock Text="{Binding Path=TheTicket.Assignee}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Assignee}" TextWrapping="WrapWithOverflow" Grid.Column="1" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid >
                     <Grid.RowDefinitions>
@@ -68,12 +74,14 @@
                         <ColumnDefinition Width="150"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Progress"/>
-                    <ProgressBar Value="{Binding Path=TheTicket.Progress}"  Grid.Column="1" Foreground="Black" Background="White"/>
+                    <Label Content="Progress %"/>
+                    <StackPanel Orientation="Horizontal" Grid.Column="1"><Rectangle Width="{Binding Path=TheTicket.Progress, Converter={StaticResource TheProgressConverter}}" HorizontalAlignment="Left" Fill="Black" Margin="0,10" />
+                        <Label Content="{Binding Path=TheTicket.Progress}"  />
+                    </StackPanel>
                 </Grid>
             </StackPanel>
 
         </Grid>
     </Border>
-    </Canvas>
+    <!--</Canvas>-->
 </Window>

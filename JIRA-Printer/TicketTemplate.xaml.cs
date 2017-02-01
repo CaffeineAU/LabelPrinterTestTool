@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,22 +22,47 @@ namespace JIRA_Printer
     /// </summary>
     public partial class TicketTemplate : Window, INotifyPropertyChanged
     {
+        bool canprint = false;
         private Ticket theTicket;
+        Guid temp = Guid.NewGuid();
 
         public Ticket TheTicket
         {
             get { return theTicket; }
             set {
                 theTicket = value;
+                SourceImage.BeginInit();
+                SourceImage.UriSource = new Uri(TheTicket.Source.fields.status.iconUrl, UriKind.Absolute);
+                SourceImage.EndInit();
+                SourceImage.DownloadCompleted += delegate { canprint = true; ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), theTicket.Key), MainCanvas);
+                    DownloadComplete?.Invoke(this, new DownloadEventArgs(TheTicket.Key));
+                };
+
                 OnPropertyChanged("TheTicket");
             }
         }
+        private BitmapImage sourceImage = new BitmapImage();
+
+        public BitmapImage SourceImage
+        {
+            get { return sourceImage;
+            }
+            set
+            {
+                sourceImage = value;
+                OnPropertyChanged("SourceImage");
+                }
+            }
 
         public TicketTemplate()
         {
             this.DataContext = this;
             InitializeComponent();
         }
+
+        public delegate void DownloadCompleteEventHandler(object sender, DownloadEventArgs e);
+        public event DownloadCompleteEventHandler DownloadComplete;
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -47,10 +73,11 @@ namespace JIRA_Printer
 
         public void Export(string path)
         {
-            ExportToPng(path, MainCanvas);
+
+            //ExportToPng(path, MainCanvas);
         }
 
-        void ExportToPng(string path, Canvas surface)
+        void ExportToPng(string path, Border surface)
         {
             if (path == null) return;
 
@@ -92,5 +119,29 @@ namespace JIRA_Printer
         }
 
 
+    }
+
+    public class ProgressConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Console.WriteLine("Converting {0} to {1}", value, (double)((int)value) * 350 / 100);
+            return value == null? 0 : (double)((int)value) * 300 / 100;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class DownloadEventArgs : EventArgs
+    {
+        public string FileName{ get; private set; }
+
+        public DownloadEventArgs(string fileName)
+        {
+            FileName = fileName;
+        }
     }
 }

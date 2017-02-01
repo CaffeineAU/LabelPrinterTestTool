@@ -286,12 +286,12 @@ namespace JIRA_Printer
                         //bool flag = false;
                         foreach (var issue in d.issues)
                         {
-                            Result.Add(new Ticket { Key = d.key ?? "None",
+                            Result.Add(new Ticket { Key = issue.key ?? "None",
                                 Component = "Not implemented",
                                 Summary = issue.fields.summary ?? "None",
                                 Status = issue.fields.status.name,
                                 Source = issue,
-                                Assignee = issue.fields.assignee.displayName ?? "None",
+                                Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = issue.fields.duedate ?? "None",
                                 Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0
                             });
@@ -343,32 +343,16 @@ namespace JIRA_Printer
         {
             foreach (var issue in Result)
             {
-                //Result.Add(new Ticket(issue));
-
-                //Console.WriteLine(t.ToString());
-
-                // printer.PrintTicket(issue);
-
                 TicketTemplate tt = new TicketTemplate { TheTicket = issue };
-                //tt.TheTicket = issue
-                //{
-                //    Key = "MTE-1060",
-                //    Component = "Not implemented",
-                //    Summary = "Test Ticket with a summary that should break across multiple lines, thereby forcing the next details down",
-                //    Status = "In Progress",
-                //    Assignee = "None",
-                //    DueDate = "None",
-                //    Progress = 25
-                //};
-                Guid temp = Guid.NewGuid();
 
-                tt.Export(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), temp));
-
-                printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), temp)));
-
-                printer.Feed(5);
-                printer.Cut();
-                //flag = true;
+                tt.DownloadComplete += delegate (object sender2, DownloadEventArgs e2)
+                {
+                    printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName)));
+                    File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
+                    printer.Feed(8);
+                    printer.Cut();
+                    tt.Close();
+                };
             }
 
         }
