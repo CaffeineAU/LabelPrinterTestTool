@@ -255,7 +255,7 @@ namespace JIRA_Printer
                                 Summary = issue.fields.summary ?? "None",
                                 Status = issue.fields.status.name,
                                 StatusIcon = issue.fields.status.iconUrl,
-                                Updated = issue.fields.updated,
+                                Updated = DateTime.Parse(issue.fields.updated).ToString("dd MMM yyyy HH:mm:ss"),
                                 //Source = issue,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = issue.fields.duedate ?? "None",
@@ -296,6 +296,7 @@ namespace JIRA_Printer
                 {
                     // would be nicer to do this with a memory stream or something, rather than temporary files
                     printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName)));
+                    //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
                     File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
                     printer.Feed(8);
                     printer.Cut();
