@@ -128,8 +128,7 @@ namespace JIRA_Printer
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Console.WriteLine("Converting {0} to {1}", value, (double)((int)value) * 350 / 100);
-            return value == null ? 0 : (double)((int)value) * 300 / 100;
+            return value == null ? 0 : (double)((int)value) * 246 / 100;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
