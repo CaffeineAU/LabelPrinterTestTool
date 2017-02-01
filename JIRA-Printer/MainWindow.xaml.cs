@@ -112,12 +112,15 @@ namespace JIRA_Printer
             this.DataContext = this;
 
 
-
             printer = new TicketPrinter();
+
 
             printer.FindPrinter();
 
             printer.Connect();
+
+
+//            printer.PrintBitImage(GTP_250.GetBitmapData(@"test.png"));
 
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += dispatcherTimer_Tick;
@@ -283,7 +286,15 @@ namespace JIRA_Printer
                         //bool flag = false;
                         foreach (var issue in d.issues)
                         {
-                            Result.Add(new Ticket(issue));
+                            Result.Add(new Ticket { Key = d.key ?? "None",
+                                Component = "Not implemented",
+                                Summary = issue.fields.summary ?? "None",
+                                Status = issue.fields.status.name,
+                                Source = issue,
+                                Assignee = issue.fields.assignee.displayName ?? "None",
+                                DueDate = issue.fields.duedate ?? "None",
+                                Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0
+                            });
 
                             //Console.WriteLine(t.ToString());
 
@@ -317,7 +328,10 @@ namespace JIRA_Printer
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            printer.Disconnect();
+            if (printer.Connected)
+            {
+                printer.Disconnect();
+            }
         }
 
         private void PrintIssuesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -333,8 +347,27 @@ namespace JIRA_Printer
 
                 //Console.WriteLine(t.ToString());
 
-                printer.PrintTicket(issue);
+                // printer.PrintTicket(issue);
 
+                TicketTemplate tt = new TicketTemplate { TheTicket = issue };
+                //tt.TheTicket = issue
+                //{
+                //    Key = "MTE-1060",
+                //    Component = "Not implemented",
+                //    Summary = "Test Ticket with a summary that should break across multiple lines, thereby forcing the next details down",
+                //    Status = "In Progress",
+                //    Assignee = "None",
+                //    DueDate = "None",
+                //    Progress = 25
+                //};
+                Guid temp = Guid.NewGuid();
+
+                tt.Export(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), temp));
+
+                printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), temp)));
+
+                printer.Feed(5);
+                printer.Cut();
                 //flag = true;
             }
 

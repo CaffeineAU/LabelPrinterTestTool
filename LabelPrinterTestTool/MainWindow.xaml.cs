@@ -69,6 +69,7 @@ namespace LabelPrinterTestTool
         {
             InitializeComponent();
             this.DataContext = this;
+
         }
 
         private void SendTextCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

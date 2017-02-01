@@ -1,35 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JIRA_Printer
 {
-    public class Ticket
+    public class Ticket: INotifyPropertyChanged
     {
-        public Ticket(dynamic d)
-        {
-            Key = d.key ?? "None";
-            Component = "Not implemented";
-            Summary = d.fields.summary ?? "None";
-            Status = d.fields.status.name;
-            Source = d;
-            if (d.fields.assignee != null)
-            {
-                Assignee = d.fields.assignee.displayName ?? "None";
-            }
-
-            
-
-            DueDate = d.fields.duedate ?? "None";
-
-            if (d.fields.progress != null && d.fields.progress.percent != null)
-            {
-                Progress = (int)(d.fields.progress.percent);
-            }
-        }
-
         public override string ToString()
         {
             return string.Format("{0} - Summary: {1}\r\n", Key, Summary);
@@ -40,7 +19,7 @@ namespace JIRA_Printer
         public dynamic Source
         {
             get { return source; }
-            set { source = value; }
+            set { source = value;}
         }
 
 
@@ -49,7 +28,9 @@ namespace JIRA_Printer
         public string Key
         {
             get { return _Key; }
-            set { _Key = value; }
+            set { _Key = value;
+                OnPropertyChanged("Key");
+            }
         }
 
         private string _Status;
@@ -57,7 +38,9 @@ namespace JIRA_Printer
         public string Status
         {
             get { return _Status; }
-            set { _Status = value; }
+            set { _Status = value;
+                OnPropertyChanged("Status");
+            }
         }
 
         private string _Summary;
@@ -65,7 +48,9 @@ namespace JIRA_Printer
         public string Summary
         {
             get { return _Summary; }
-            set { _Summary = value; }
+            set { _Summary = value;
+                OnPropertyChanged("Summary");
+            }
         }
 
         private string _Assignee;
@@ -73,7 +58,9 @@ namespace JIRA_Printer
         public string Assignee
         {
             get { return _Assignee; }
-            set { _Assignee = value; }
+            set { _Assignee = value;
+                OnPropertyChanged("Assignee");
+            }
         }
 
         private string _DueDate;
@@ -81,7 +68,9 @@ namespace JIRA_Printer
         public string DueDate
         {
             get { return _DueDate; }
-            set { _DueDate = value; }
+            set { _DueDate = value;
+                OnPropertyChanged("DueDate");
+            }
         }
 
         private int _Progress;
@@ -89,7 +78,9 @@ namespace JIRA_Printer
         public int Progress
         {
             get { return _Progress; }
-            set { _Progress = value; }
+            set { _Progress = value;
+                OnPropertyChanged("Progress");
+            }
         }
 
         private string _Component;
@@ -97,10 +88,18 @@ namespace JIRA_Printer
         public string Component
         {
             get { return _Component; }
-            set { _Component = value; }
+            set { _Component = value;
+                OnPropertyChanged("Component");
+            }
         }
 
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(String name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
 
     }

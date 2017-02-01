@@ -1,0 +1,79 @@
+﻿<Window x:Class="JIRA_Printer.TicketTemplate"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:local="clr-namespace:JIRA_Printer"
+ mc:Ignorable="d"
+        FontSize="24"
+ Title="TicketTemplate" Height="512" Width="512">
+    <Canvas  x:Name="MainCanvas" Width="512" Height="500" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
+        <Border BorderThickness="2" BorderBrush="Black" Margin="5">
+        <Grid Grid.IsSharedSizeScope="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="{Binding Path=TheTicket.Key}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" FontSize="60"/>
+            <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Component"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Component}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                </Grid>
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Status"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Status}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                </Grid>
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Summary"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Summary}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                </Grid>
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Assignee"/>
+                    <TextBlock Text="{Binding Path=TheTicket.Assignee}" TextWrapping="WrapWithOverflow" Grid.Column="1"/>
+                </Grid>
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Progress"/>
+                    <ProgressBar Value="{Binding Path=TheTicket.Progress}"  Grid.Column="1" Foreground="Black" Background="White"/>
+                </Grid>
+            </StackPanel>
+
+        </Grid>
+    </Border>
+    </Canvas>
+</Window>
