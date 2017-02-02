@@ -160,7 +160,7 @@ namespace JIRA_Printer
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? 0 : (double)((int)value) * 246 / 100;
+            return value == null ? 0 : (double)((int)value) * 250 / 100;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

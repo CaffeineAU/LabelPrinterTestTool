@@ -305,7 +305,7 @@ namespace JIRA_Printer
                 };
                 tt.Export();
                 //Show
-                //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));         
+                //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));
             }
 
         }
