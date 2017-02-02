@@ -296,14 +296,16 @@ namespace JIRA_Printer
                 tt.DownloadComplete += delegate (object sender2, DownloadEventArgs e2)
                 {
                     // would be nicer to do this with a memory stream or something, rather than temporary files
+                    // Print
                     printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName)));
-                    //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
                     File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
                     printer.Feed(8);
                     printer.Cut();
                     tt.Close();
                 };
                 tt.Export();
+                //Show
+                //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));         
             }
 
         }

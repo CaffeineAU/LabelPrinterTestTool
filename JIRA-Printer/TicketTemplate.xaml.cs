@@ -93,7 +93,7 @@ namespace JIRA_Printer
             }
 
             SourceImage.BeginInit();
-            SourceImage.UriSource = new Uri(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key + TheTicket.IssueType), UriKind.Absolute);
+            SourceImage.UriSource = new Uri(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType), UriKind.Absolute);
             SourceImage.EndInit();
 
             ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key), MainCanvas);
