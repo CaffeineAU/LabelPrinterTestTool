@@ -34,15 +34,15 @@ namespace JIRA_Printer
             }
         }
 
-        private string _statusIcon;
+        private string _issueTypeIcon;
 
-        public string StatusIcon
+        public string IssueTypeIcon
         {
-            get { return _statusIcon; }
+            get { return _issueTypeIcon; }
             set
             {
-                _statusIcon = value;
-                OnPropertyChanged("StatusIcon");
+                _issueTypeIcon = value;
+                OnPropertyChanged("IssueTypeIcon");
             }
         }
 
@@ -57,12 +57,26 @@ namespace JIRA_Printer
             }
         }
 
+        private string _IssueType;
+
+        public string IssueType
+        {
+            get { return _IssueType; }
+            set
+            {
+                _IssueType = value;
+                OnPropertyChanged("IssueType");
+            }
+        }
+
         private string _Status;
 
         public string Status
         {
             get { return _Status; }
-            set { _Status = value;
+            set
+            {
+                _Status = value;
                 OnPropertyChanged("Status");
             }
         }

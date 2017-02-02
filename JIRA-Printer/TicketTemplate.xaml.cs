@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Svg;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,16 +33,12 @@ namespace JIRA_Printer
             set
             {
                 theTicket = value;
-                SourceImage.BeginInit();
-                SourceImage.UriSource = new Uri(TheTicket.StatusIcon, UriKind.Absolute);
-                SourceImage.EndInit();
-                SourceImage.DownloadCompleted += delegate
-                {
-                    ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key), MainCanvas);
-                    DownloadComplete?.Invoke(this, new DownloadEventArgs(TheTicket.Key));
-                };
 
                 OnPropertyChanged("TheTicket");
+
+                //SourceImage.DownloadCompleted += delegate
+                //{
+                //};
             }
         }
         private BitmapImage sourceImage = new BitmapImage();
@@ -61,6 +60,7 @@ namespace JIRA_Printer
         {
             this.DataContext = this;
             InitializeComponent();
+            
         }
 
         public delegate void DownloadCompleteEventHandler(object sender, DownloadEventArgs e);
@@ -74,8 +74,32 @@ namespace JIRA_Printer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public void Export(string path)
+        public void Export()
         {
+            if (!File.Exists(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType)))
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    string authorization = "Basic " + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword)));
+                    wc.Headers.Add("Authorization", authorization);
+                    wc.DownloadFile(TheTicket.IssueTypeIcon, String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType));
+                    if (File.ReadAllText(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType)).StartsWith("<?xml")) // it's an SVG file
+                    {
+                        var svgDocument = SvgDocument.Open(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType));
+                        var bitmap = svgDocument.Draw(48, 48);
+                        bitmap.Save(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType), ImageFormat.Png);
+                    }
+                }
+            }
+
+            SourceImage.BeginInit();
+            SourceImage.UriSource = new Uri(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key + TheTicket.IssueType), UriKind.Absolute);
+            SourceImage.EndInit();
+
+            ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key), MainCanvas);
+            //File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key + TheTicket.IssueType));
+            DownloadComplete?.Invoke(this, new DownloadEventArgs(TheTicket.Key));
+
 
             //ExportToPng(path, MainCanvas);
         }
@@ -121,7 +145,15 @@ namespace JIRA_Printer
             surface.LayoutTransform = transform;
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
 
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class ProgressConverter : IValueConverter

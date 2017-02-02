@@ -33,6 +33,7 @@
         <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2" RowHeaderWidth="25" AlternatingRowBackground="#FFE6F1F5" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}" />
+                <DataGridTextColumn Header="Issue Type" Binding="{Binding Path=IssueType}" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" />
                 <DataGridTextColumn Header="Assignee" Binding="{Binding Path=Assignee}" />
                 <DataGridTextColumn Header="Summary" Binding="{Binding Path=Summary}" />

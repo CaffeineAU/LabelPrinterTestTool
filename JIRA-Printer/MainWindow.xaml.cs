@@ -216,7 +216,7 @@ namespace JIRA_Printer
                 num_results,
                 IssueTimePeriod);
 
-            //Clipboard.SetText(request);
+            Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
 
@@ -254,7 +254,8 @@ namespace JIRA_Printer
                                 Component = "Not implemented",
                                 Summary = issue.fields.summary ?? "None",
                                 Status = issue.fields.status.name,
-                                StatusIcon = issue.fields.status.iconUrl,
+                                IssueType = issue.fields.issuetype.name,
+                                IssueTypeIcon = issue.fields.issuetype.iconUrl,
                                 Updated = DateTime.Parse(issue.fields.updated).ToString("dd MMM yyyy HH:mm:ss"),
                                 //Source = issue,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
@@ -302,6 +303,7 @@ namespace JIRA_Printer
                     printer.Cut();
                     tt.Close();
                 };
+                tt.Export();
             }
 
         }

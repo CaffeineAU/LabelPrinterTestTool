@@ -43,7 +43,7 @@ namespace JIRA_Printer
             DrawLine(line_width);
             //Feed(1);
             WriteAsciiString("Component:\t" + t.Component);
-            DownloadAndPrintImage(t.StatusIcon);
+            DownloadAndPrintImage(t.IssueTypeIcon);
             WriteAsciiString("Status:\t" + t.Status);
             //Feed(1);
             WriteAsciiString("Summary:\t" + t.Summary);

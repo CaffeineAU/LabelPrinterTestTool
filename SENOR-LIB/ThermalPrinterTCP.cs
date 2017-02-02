@@ -643,7 +643,7 @@ namespace SENOR_LIB
         {
             using (var bitmap = (Bitmap)Bitmap.FromFile(bmpFileName))
             {
-                var threshold = 127;
+                var threshold = 200;
                 var index = 0;
                 var dimensions = bitmap.Width * bitmap.Height;
                 var dots = new BitArray(dimensions);
