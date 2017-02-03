@@ -218,7 +218,7 @@ namespace JIRA_Printer
 
         private void ShowIssues()
         {
-            Result.Clear();
+            
 
             string project = "MTE";
             int num_results = 100;
@@ -267,8 +267,14 @@ namespace JIRA_Printer
 
                         d = Json.Decode(responseString);
 
+
                         foreach (var issue in d.issues)
                         {
+                            if (Result.Any(n => n.Key == issue.key))
+                            {
+                                Result.Remove(Result.First(n => n.Key == issue.key)); // if it's already there, delete it and add it again, it must have changed
+                            }
+
                             Result.Add(new Ticket
                             {
                                 Key = issue.key ?? "None",
@@ -338,6 +344,7 @@ namespace JIRA_Printer
                 //Show
                 //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));
             }
+            Result.Clear();
 
         }
 
