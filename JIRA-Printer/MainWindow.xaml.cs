@@ -65,9 +65,9 @@ namespace JIRA_Printer
             }
         }
 
-        private string issueTimePeriod = Properties.Settings.Default.SelectedTimePeriod;
+        private TimeSpan issueTimePeriod = Properties.Settings.Default.SelectedTimePeriod;
 
-        public string IssueTimePeriod
+        public TimeSpan IssueTimePeriod
         {
             get { return issueTimePeriod; }
             set
@@ -78,6 +78,38 @@ namespace JIRA_Printer
                 Properties.Settings.Default.Save();
             }
         }
+
+        private String lastChecked;
+
+        public String LastChecked
+        {
+            get { return lastChecked; }
+            set
+            {
+                lastChecked = value;
+                OnPropertyChanged("LastChecked");
+            }
+        }
+
+        private TimeSpan countdown;
+
+        public TimeSpan Countdown
+        {
+            get { return countdown; }
+            set
+            {
+                countdown = value;
+                OnPropertyChanged("Countdown");
+                OnPropertyChanged("CountdownText");
+            }
+        }
+
+        public String CountdownText
+        {
+            get { return String.Format("Next check in {0:hh\\:mm\\:ss}", Countdown); }
+        }
+
+
 
         private void RegeneratePropertiesAndSave()
         {
@@ -116,9 +148,14 @@ namespace JIRA_Printer
             printer.Connect();
 
             DispatcherTimer t = new DispatcherTimer();
-            t.Interval = TimeSpan.FromMinutes(10);
+            t.Interval = IssueTimePeriod;
             t.Tick += delegate { ShowIssues(); };
             t.Start();
+
+            DispatcherTimer t2 = new DispatcherTimer();
+            t2.Interval = TimeSpan.FromSeconds(0.5);
+            t2.Tick += delegate { Countdown = Properties.Settings.Default.LAST_QUERY + IssueTimePeriod - DateTime.Now; };
+            t2.Start();
 
 
             // do this once, to create the .settings file
@@ -207,7 +244,7 @@ namespace JIRA_Printer
 
         private void ShowIssuesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod);
+            e.CanExecute = true; //!String.IsNullOrEmpty(IssueTimePeriod);
         }
 
 
@@ -299,8 +336,9 @@ namespace JIRA_Printer
                         }
 
 
-
-                        Properties.Settings.Default.LAST_QUERY = DateTime.Now; // Not actually used anymore
+                        DateTime lastchecked = DateTime.Now;
+                        Properties.Settings.Default.LAST_QUERY =lastchecked; // Not actually used anymore
+                        LastChecked = String.Format("Last checked at {0}, next check is {1}", lastchecked.ToString("dd MMM yyyy HH:mm:ss"),  (lastchecked + IssueTimePeriod).ToString("dd MMM yyyy HH:mm:ss"));
                         Properties.Settings.Default.Save();
                     }
                 }
@@ -321,7 +359,7 @@ namespace JIRA_Printer
 
         private void PrintIssuesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod) && Result.Count > 0;
+            e.CanExecute = Result.Count > 0;
         }
 
         private void PrintIssuesCommand_Executed(object sender, ExecutedRoutedEventArgs e)

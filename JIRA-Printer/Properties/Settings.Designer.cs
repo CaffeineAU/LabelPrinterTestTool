@@ -107,11 +107,11 @@ namespace JIRA_Printer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1d")]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:10:00")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public string SelectedTimePeriod {
+        public global::System.TimeSpan SelectedTimePeriod {
             get {
-                return ((string)(this["SelectedTimePeriod"]));
+                return ((global::System.TimeSpan)(this["SelectedTimePeriod"]));
             }
             set {
                 this["SelectedTimePeriod"] = value;

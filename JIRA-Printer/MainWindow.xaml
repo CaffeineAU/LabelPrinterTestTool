@@ -22,6 +22,7 @@
             <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="300" SharedSizeGroup="Rows"/>
@@ -32,12 +33,13 @@
         </Grid.RowDefinitions>
         <tb:TaskbarIcon x:Name="myNotifyIcon"
                     Visibility="Visible"
-                    ToolTipText="JIRA Printer"
+                    ToolTipText="{Binding Path=CountdownText}"
+
                     IconSource="pack://application:,,,/speech-bubble.ico"
                         TrayLeftMouseUp="myNotifyIcon_TrayLeftMouseUp"
                     PopupActivation="LeftOrRightClick">
         </tb:TaskbarIcon>
-        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2" RowHeaderWidth="25" AlternatingRowBackground="#FFE6F1F5" AutoGenerateColumns="False">
+        <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="2" RowHeaderWidth="25" AlternatingRowBackground="#FFE6F1F5" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}" />
                 <DataGridTextColumn Header="Issue Type" Binding="{Binding Path=IssueType}" />
@@ -63,9 +65,11 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2"  >
             <Label Content="Issues from the last " VerticalContentAlignment="Center" Margin="10,0"/>
-            <TextBox  Width="50" Margin="10" VerticalContentAlignment="Center" Text="{Binding Path=IssueTimePeriod}" />
+            <TextBox  Width="150" Margin="10" VerticalContentAlignment="Center" Text="{Binding Path=IssueTimePeriod}" />
             <Button  Content="Show Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.ShowIssuesCommand" />
             <Button  Content="Print Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.PrintIssuesCommand"/>
+            <Label Content="{Binding Path=LastChecked}" VerticalContentAlignment="Center" Margin="10,0"/>
         </StackPanel>
+        <Label x:Name="label" Content="{Binding Path=Countdown}" ContentStringFormat="{}{0:hh}:{0:mm}:{0:ss}" Grid.Column="3" HorizontalAlignment="Stretch" Margin="0" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" VerticalAlignment="Stretch" />
     </Grid>
 </Window>
