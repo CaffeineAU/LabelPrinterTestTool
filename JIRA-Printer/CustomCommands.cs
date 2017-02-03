@@ -75,6 +75,5 @@ namespace JIRA_Printer.Commands
                     new KeyGesture(Key.S, ModifierKeys.Control)
                 }
         );
-
     }
 }

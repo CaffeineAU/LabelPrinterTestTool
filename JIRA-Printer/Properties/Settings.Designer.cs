@@ -103,5 +103,19 @@ namespace JIRA_Printer.Properties {
                 this["IssueFields"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1d")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SelectedTimePeriod {
+            get {
+                return ((string)(this["SelectedTimePeriod"]));
+            }
+            set {
+                this["SelectedTimePeriod"] = value;
+            }
+        }
     }
 }

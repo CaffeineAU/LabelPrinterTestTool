@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JIRA_Printer"
-         xmlns:self="clr-namespace:JIRA_Printer.Commands"
-
+        xmlns:self="clr-namespace:JIRA_Printer.Commands"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1280" FontSize="14" Closing="Window_Closing">
+        Title="JIRA Ticket Watcher" Height="800" Width="1280" FontSize="14" Closing="Window_Closing" StateChanged="Window_StateChanged" Icon="speech-bubble.ico">
     <Window.CommandBindings>
         <CommandBinding x:Uid="AddStatusCommand" Command="self:CustomCommands.AddStatusCommand" Executed="AddStatusCommand_Executed" CanExecute="AddStatusCommand_CanExecute" />
         <CommandBinding x:Uid="RemoveStatusCommand" Command="self:CustomCommands.RemoveStatusCommand" Executed="RemoveStatusCommand_Executed" CanExecute="RemoveStatusCommand_CanExecute" />
@@ -19,8 +19,8 @@
 
     <Grid Grid.IsSharedSizeScope="True">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="0"/>
+            <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -30,6 +30,13 @@
             <RowDefinition SharedSizeGroup="Buttons"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <tb:TaskbarIcon x:Name="myNotifyIcon"
+                    Visibility="Visible"
+                    ToolTipText="JIRA Printer"
+                    IconSource="pack://application:,,,/speech-bubble.ico"
+                        TrayLeftMouseUp="myNotifyIcon_TrayLeftMouseUp"
+                    PopupActivation="LeftOrRightClick">
+        </tb:TaskbarIcon>
         <DataGrid x:Name="dataGrid" ItemsSource="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" Grid.RowSpan="3" Grid.Column="2" RowHeaderWidth="25" AlternatingRowBackground="#FFE6F1F5" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}" />
@@ -54,8 +61,8 @@
             <Button x:Name="addFieldbutton" Content="Add Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.AddFieldCommand" />
             <Button x:Name="removeFieldbutton" Content="Remove Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.RemoveFieldCommand"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2" >
-            <Label Content="Issues from the last " VerticalContentAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2"  >
+            <Label Content="Issues from the last " VerticalContentAlignment="Center" Margin="10,0"/>
             <TextBox  Width="50" Margin="10" VerticalContentAlignment="Center" Text="{Binding Path=IssueTimePeriod}" />
             <Button  Content="Show Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.ShowIssuesCommand" />
             <Button  Content="Print Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.PrintIssuesCommand"/>

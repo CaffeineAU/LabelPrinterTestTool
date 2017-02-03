@@ -21,6 +21,8 @@ using System.Web.Helpers;
 using SENOR_LIB;
 using System.Web;
 using System.Collections.ObjectModel;
+using System.Windows.Controls.Primitives;
+using System.Windows.Threading;
 
 namespace JIRA_Printer
 {
@@ -63,7 +65,7 @@ namespace JIRA_Printer
             }
         }
 
-        private string issueTimePeriod = "1d";
+        private string issueTimePeriod = Properties.Settings.Default.SelectedTimePeriod;
 
         public string IssueTimePeriod
         {
@@ -72,6 +74,8 @@ namespace JIRA_Printer
             {
                 issueTimePeriod = value;
                 OnPropertyChanged("IssueTimePeriod");
+                Properties.Settings.Default.SelectedTimePeriod = value;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -111,6 +115,12 @@ namespace JIRA_Printer
             printer.FindPrinter();
             printer.Connect();
 
+            DispatcherTimer t = new DispatcherTimer();
+            t.Interval = TimeSpan.FromMinutes(10);
+            t.Tick += delegate { ShowIssues(); };
+            t.Start();
+
+
             // do this once, to create the .settings file
             if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
             {
@@ -144,6 +154,8 @@ namespace JIRA_Printer
 
             IssueStatuses.CollectionChanged += delegate { RegeneratePropertiesAndSave(); };
             IssueFields.CollectionChanged += delegate { RegeneratePropertiesAndSave(); };
+
+            ShowIssues();
 
         }
 
@@ -198,7 +210,13 @@ namespace JIRA_Printer
             e.CanExecute = !String.IsNullOrEmpty(IssueTimePeriod);
         }
 
+
         private void ShowIssuesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ShowIssues();
+        }
+
+        private void ShowIssues()
         {
             Result.Clear();
 
@@ -208,15 +226,18 @@ namespace JIRA_Printer
             string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
             string str_fields = String.Join(", ", IssueFields);
 
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>=-{5})&startAt=0&maxResults={4}&fields={3}",
+            double issuetimeperiod = Math.Max((DateTime.Now - Properties.Settings.Default.LAST_QUERY).TotalMinutes, 1);
+
+
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>=-{5:F0}m)&startAt=0&maxResults={4}&fields={3}",
                 Properties.Settings.Default.JIRA_API,
                 project,
                 str_status,
                 str_fields,
                 num_results,
-                IssueTimePeriod);
+                issuetimeperiod);
 
-            Clipboard.SetText(request);
+            //Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
 
@@ -259,10 +280,20 @@ namespace JIRA_Printer
                                 Updated = DateTime.Parse(issue.fields.updated).ToString("dd MMM yyyy HH:mm:ss"),
                                 //Source = issue,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
-                                DueDate = issue.fields.duedate ?? "None",
-                                Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0
+                                Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0,
+                                DueDate = issue.fields.duedate ?? "None"
                             });
+                            JiraBalloon balloon = new JiraBalloon();
+                            balloon.MouseDown += delegate { WindowState = WindowState.Normal; Activate(); };
+                            balloon.BalloonText = "New JIRA Issue";
+                            balloon.BalloonContent = String.Format("{0} : {1}", issue.key, issue.fields.summary);
+
+                            //show balloon and close it after 4 seconds
+                            myNotifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
                         }
+
+
+
                         Properties.Settings.Default.LAST_QUERY = DateTime.Now; // Not actually used anymore
                         Properties.Settings.Default.Save();
                     }
@@ -308,6 +339,30 @@ namespace JIRA_Printer
                 //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));
             }
 
+        }
+
+        private void myNotifyIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Minimized)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            this.Activate();
+
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == System.Windows.WindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+            }
+            else
+            {
+                this.ShowInTaskbar = true;
+            }
+
+            //base.OnStateChanged(e);
         }
     }
 

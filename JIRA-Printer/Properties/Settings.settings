@@ -20,5 +20,8 @@
     <Setting Name="IssueFields" Provider="PortableSettingsProvider" Roaming="true" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SelectedTimePeriod" Provider="PortableSettingsProvider" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1d</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
