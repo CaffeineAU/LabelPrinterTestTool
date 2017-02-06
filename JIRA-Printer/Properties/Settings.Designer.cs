@@ -117,5 +117,18 @@ namespace JIRA_Printer.Properties {
                 this["SelectedTimePeriod"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public global::System.DateTime LastPrintTime {
+            get {
+                return ((global::System.DateTime)(this["LastPrintTime"]));
+            }
+            set {
+                this["LastPrintTime"] = value;
+            }
+        }
     }
 }

@@ -64,7 +64,7 @@
             <Button x:Name="removeFieldbutton" Content="Remove Field" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.RemoveFieldCommand"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2"  >
-            <Label Content="Issues from the last " VerticalContentAlignment="Center" Margin="10,0"/>
+            <Label Content="Refresh at the following interval " VerticalContentAlignment="Center" Margin="10,0"/>
             <TextBox  Width="150" Margin="10" VerticalContentAlignment="Center" Text="{Binding Path=IssueTimePeriod}" />
             <Button  Content="Show Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Command="self:CustomCommands.ShowIssuesCommand" />
             <Button  Content="Print Issues" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch"  Command="self:CustomCommands.PrintIssuesCommand"/>

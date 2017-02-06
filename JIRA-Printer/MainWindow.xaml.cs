@@ -76,6 +76,9 @@ namespace JIRA_Printer
                 OnPropertyChanged("IssueTimePeriod");
                 Properties.Settings.Default.SelectedTimePeriod = value;
                 Properties.Settings.Default.Save();
+                refreshTimer.Interval = IssueTimePeriod;
+                refreshTimer.Start();
+
             }
         }
 
@@ -137,6 +140,7 @@ namespace JIRA_Printer
         }
 
         TicketPrinter printer;
+            DispatcherTimer refreshTimer = new DispatcherTimer();
 
         public MainWindow()
         {
@@ -147,10 +151,9 @@ namespace JIRA_Printer
             printer.FindPrinter();
             printer.Connect();
 
-            DispatcherTimer t = new DispatcherTimer();
-            t.Interval = IssueTimePeriod;
-            t.Tick += delegate { ShowIssues(); };
-            t.Start();
+            refreshTimer.Interval = IssueTimePeriod;
+            refreshTimer.Tick += delegate { ShowIssues(); };
+            refreshTimer.Start();
 
             DispatcherTimer t2 = new DispatcherTimer();
             t2.Interval = TimeSpan.FromSeconds(0.5);
@@ -162,6 +165,12 @@ namespace JIRA_Printer
             if (Properties.Settings.Default.LAST_QUERY == null || Properties.Settings.Default.LAST_QUERY < DateTime.Now.AddYears(-1))
             {
                 Properties.Settings.Default.LAST_QUERY = DateTime.Now.AddYears(-1);
+                Properties.Settings.Default.Save();
+            }
+
+            if (Properties.Settings.Default.LastPrintTime == null || Properties.Settings.Default.LastPrintTime < DateTime.Now.AddYears(-1))
+            {
+                Properties.Settings.Default.LastPrintTime = DateTime.Now.AddYears(-1);
                 Properties.Settings.Default.Save();
             }
 
@@ -258,12 +267,14 @@ namespace JIRA_Printer
             
 
             string project = "MTE";
-            int num_results = 100;
+            int num_results = 1000;
 
             string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
             string str_fields = String.Join(", ", IssueFields);
 
-            double issuetimeperiod = Math.Max((DateTime.Now - Properties.Settings.Default.LAST_QUERY).TotalMinutes, 1);
+
+            //Updated since the last print
+            double issuetimeperiod = Math.Max((DateTime.Now - Properties.Settings.Default.LastPrintTime).TotalMinutes, 1);
 
 
             string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>=-{5:F0}m)&startAt=0&maxResults={4}&fields={3}",
@@ -274,7 +285,7 @@ namespace JIRA_Printer
                 num_results,
                 issuetimeperiod);
 
-            //Clipboard.SetText(request);
+            Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
 
@@ -304,12 +315,17 @@ namespace JIRA_Printer
 
                         d = Json.Decode(responseString);
 
+                        int newissues = 0;
 
                         foreach (var issue in d.issues)
                         {
                             if (Result.Any(n => n.Key == issue.key))
                             {
                                 Result.Remove(Result.First(n => n.Key == issue.key)); // if it's already there, delete it and add it again, it must have changed
+                            }
+                            else // a new one
+                            {
+                                newissues++;
                             }
 
                             Result.Add(new Ticket
@@ -326,19 +342,30 @@ namespace JIRA_Printer
                                 Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0,
                                 DueDate = issue.fields.duedate ?? "None"
                             });
+                        }
+
+                        if (newissues > 0)
+                        {
                             JiraBalloon balloon = new JiraBalloon();
                             balloon.MouseDown += delegate { WindowState = WindowState.Normal; Activate(); };
-                            balloon.BalloonText = "New JIRA Issue";
-                            balloon.BalloonContent = String.Format("{0} : {1}", issue.key, issue.fields.summary);
+                            balloon.BalloonText = "JIRA Issues updated";
+                            balloon.BalloonContent = String.Format("{0} issue{1} updated", newissues, newissues == 1? "":"s");
 
                             //show balloon and close it after 4 seconds
                             myNotifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
+
+                            //if (WindowState == WindowState.Normal)
+                            //{
+                                dataGrid.Focus();
+                            //}
+                            
+
                         }
 
 
                         DateTime lastchecked = DateTime.Now;
                         Properties.Settings.Default.LAST_QUERY =lastchecked; // Not actually used anymore
-                        LastChecked = String.Format("Last checked at {0}, next check is {1}", lastchecked.ToString("dd MMM yyyy HH:mm:ss"),  (lastchecked + IssueTimePeriod).ToString("dd MMM yyyy HH:mm:ss"));
+                        LastChecked = String.Format("Last checked at {0}, next check is {1}. Last printed at {2}", lastchecked.ToString("dd MMM yyyy HH:mm:ss"),  (lastchecked + IssueTimePeriod).ToString("dd MMM yyyy HH:mm:ss"), Properties.Settings.Default.LastPrintTime.ToString("dd MMM yyyy HH:mm:ss"));
                         Properties.Settings.Default.Save();
                     }
                 }
@@ -371,17 +398,19 @@ namespace JIRA_Printer
                 tt.DownloadComplete += delegate (object sender2, DownloadEventArgs e2)
                 {
                     // would be nicer to do this with a memory stream or something, rather than temporary files
-                    // Print
                     printer.PrintBitImage(GTP_250.GetBitmapData(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName)));
                     File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), e2.FileName));
                     printer.Feed(8);
                     printer.Cut();
                     tt.Close();
                 };
-                tt.Export();
                 //Show
                 //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));
+                // Print
+                tt.Export();
             }
+            Properties.Settings.Default.LastPrintTime = DateTime.Now;
+            Properties.Settings.Default.Save();
             Result.Clear();
 
         }
