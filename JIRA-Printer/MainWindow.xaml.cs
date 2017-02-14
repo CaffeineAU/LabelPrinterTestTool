@@ -188,7 +188,7 @@ namespace JIRA_Printer
 
             if (Properties.Settings.Default.IssueFields == null || Properties.Settings.Default.IssueFields.Count == 0)
             {
-                IssueFields = new ObservableCollection<string> { "key", "status", "summary", "progress", "duedate", "assignee", "updated" };
+                IssueFields = new ObservableCollection<string> { "key", "status", "summary", "progress", "duedate", "assignee", "created" };
                 Properties.Settings.Default.IssueFields = new System.Collections.Specialized.StringCollection();
                 Properties.Settings.Default.IssueFields.AddRange(IssueFields.ToArray());
                 Properties.Settings.Default.Save();
@@ -273,11 +273,11 @@ namespace JIRA_Printer
             string str_fields = String.Join(", ", IssueFields);
 
 
-            //Updated since the last print
+            //Created since the last print
             double issuetimeperiod = Math.Max((DateTime.Now - Properties.Settings.Default.LastPrintTime).TotalMinutes, 1);
 
 
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND updated>=-{5:F0}m)&startAt=0&maxResults={4}&fields={3}",
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND created>=-{5:F0}m)&startAt=0&maxResults={4}&fields={3}",
                 Properties.Settings.Default.JIRA_API,
                 project,
                 str_status,
@@ -336,7 +336,7 @@ namespace JIRA_Printer
                                 Status = issue.fields.status.name,
                                 IssueType = issue.fields.issuetype.name,
                                 IssueTypeIcon = issue.fields.issuetype.iconUrl,
-                                Updated = DateTime.Parse(issue.fields.updated).ToString("dd MMM yyyy HH:mm:ss"),
+                                Created = DateTime.Parse(issue.fields.created).ToString("dd MMM yyyy HH:mm:ss"),
                                 //Source = issue,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0,
@@ -348,8 +348,8 @@ namespace JIRA_Printer
                         {
                             JiraBalloon balloon = new JiraBalloon();
                             balloon.MouseDown += delegate { WindowState = WindowState.Normal; Activate(); };
-                            balloon.BalloonText = "JIRA Issues updated";
-                            balloon.BalloonContent = String.Format("{0} issue{1} updated", newissues, newissues == 1? "":"s");
+                            balloon.BalloonText = "JIRA Issues Created";
+                            balloon.BalloonContent = String.Format("{0} issue{1} Created", newissues, newissues == 1? "":"s");
 
                             //show balloon and close it after 4 seconds
                             myNotifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);

@@ -52,7 +52,7 @@ namespace JIRA_Printer
             //Feed(1);
             WriteAsciiString("Due:\t\t" + t.DueDate);
             //Feed(1);
-            WriteAsciiString("Progress:\t" + t.Progress.ToString() + "%");
+            //WriteAsciiString("Progress:\t" + t.Progress.ToString() + "%");
             //Feed(1);
             DrawLine(line_width);
 
@@ -60,7 +60,7 @@ namespace JIRA_Printer
 
             Print();
 
-            //Feed(5);
+            Feed(5);
 
             Cut();
         }

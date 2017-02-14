@@ -34,6 +34,18 @@ namespace JIRA_Printer
             }
         }
 
+        private string _Created;
+
+        public string Created
+        {
+            get { return _Created; }
+            set
+            {
+                _Created = value;
+                OnPropertyChanged("Created");
+            }
+        }
+
         private string _issueTypeIcon;
 
         public string IssueTypeIcon
