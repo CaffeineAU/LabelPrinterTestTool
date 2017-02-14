@@ -340,7 +340,7 @@ namespace JIRA_Printer
                                 //Source = issue,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0,
-                                DueDate = issue.fields.duedate ?? "None"
+                                DueDate = DateTime.Parse(issue.fields.duedate).ToString("dd MMM yyyy") ?? "None"
                             });
                         }
 

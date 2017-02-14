@@ -43,10 +43,12 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}" />
                 <DataGridTextColumn Header="Issue Type" Binding="{Binding Path=IssueType}" />
+                <DataGridTextColumn Header="Created" Binding="{Binding Path=Created}" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" />
                 <DataGridTextColumn Header="Assignee" Binding="{Binding Path=Assignee}" />
                 <DataGridTextColumn Header="Summary" Binding="{Binding Path=Summary}" />
                 <DataGridTextColumn Header="Progress" Binding="{Binding Path=Progress}" />
+                
             </DataGrid.Columns>
         </DataGrid>
         <Label Content="Statuses" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Top" Grid.Row="0" />

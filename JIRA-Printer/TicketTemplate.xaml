@@ -17,10 +17,11 @@
                 <RowDefinition Height="90"/>
                 <RowDefinition Height="0"/>
                 <RowDefinition Height="50" SharedSizeGroup="Rows"/>
-                <RowDefinition SharedSizeGroup="Rows"/>
-                <RowDefinition SharedSizeGroup="Rows"/>
-                <RowDefinition SharedSizeGroup="Rows"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition SharedSizeGroup="Rows" Height="25*"/>
+                <RowDefinition SharedSizeGroup="Rows" Height="25*"/>
+                <!--<RowDefinition Height="0"/>-->
+                <!--<RowDefinition SharedSizeGroup="Rows" Height="25*"/>-->
+                <RowDefinition Height="103*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="170"/>
@@ -34,12 +35,12 @@
                 <Label Content="{Binding Path=TheTicket.IssueType}" VerticalContentAlignment="Center" VerticalAlignment="Stretch"/>
             </StackPanel>-->
             <Label Content="Status" FontWeight="DemiBold"  Grid.Row="2" VerticalContentAlignment="Center"  VerticalAlignment="Center" Margin="0,0,5,0" Height="50"/>
-                <Label Content="{Binding Path=TheTicket.Status}" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Stretch"/>
+            <Label Content="{Binding Path=TheTicket.Status}" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Stretch"/>
             <Label Content="Assignee" FontWeight="DemiBold"  Grid.Row="3"  VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" Height="50"/>
             <Label Content="{Binding Path=TheTicket.Assignee}"  Grid.Column="1"  VerticalContentAlignment="Center" VerticalAlignment="Center"  Grid.Row="3" Margin="0,0,5,0" Height="50"/>
-            <Label Content="Last Updated" FontWeight="DemiBold" Grid.Row="4"  VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" Height="50"/>
-            <Label Content="{Binding Path=TheTicket.Updated}"  Grid.Column="1"  VerticalContentAlignment="Center" VerticalAlignment="Center" Grid.Row="4" Margin="0,0,5,0" Height="50"/>
-            <Label Content="Progress %" FontWeight="DemiBold"  Grid.Row="5"  VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" Height="50"/>
+            <Label Content="Due Date" FontWeight="DemiBold" Grid.Row="4"  VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" Height="50"/>
+            <Label Content="{Binding Path=TheTicket.DueDate}"  Grid.Column="1"  VerticalContentAlignment="Center" VerticalAlignment="Center" Grid.Row="4" Margin="0,0,5,0" Height="50"/>
+            <!--<Label Content="Progress %" FontWeight="DemiBold"  Grid.Row="5"  VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" Height="50"/>
             <Grid Grid.Column="1"  Grid.Row="5" VerticalAlignment="Center" Margin="0,0,5,0" Height="50">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="250"/>
@@ -48,7 +49,7 @@
                 <Rectangle Width="250" HorizontalAlignment="Left" Margin="0,10" Stroke="Black" />
                 <Rectangle Width="{Binding Path=TheTicket.Progress, Converter={StaticResource TheProgressConverter}}" HorizontalAlignment="Left" Fill="Black" Margin="0,10" />
                 <Label  VerticalContentAlignment="Center" Grid.Column="1" Content="{Binding Path=TheTicket.Progress}"  ContentStringFormat="{}{0}%" />
-            </Grid>
+            </Grid>-->
             <Label Content="Summary" FontWeight="DemiBold"  Grid.Row="6"  VerticalContentAlignment="Center" VerticalAlignment="Top" Margin="0,-5" Height="50"/>
             <TextBlock Text="{Binding Path=TheTicket.Summary}" TextWrapping="WrapWithOverflow" Grid.Column="1" VerticalAlignment="Top"  Grid.Row="6" Margin="5"/>
         </Grid>
