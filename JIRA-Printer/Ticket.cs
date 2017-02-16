@@ -58,6 +58,18 @@ namespace JIRA_Printer
             }
         }
 
+        private string _priorityIcon;
+
+        public string PriorityIcon
+        {
+            get { return _priorityIcon; }
+            set
+            {
+                _priorityIcon = value;
+                OnPropertyChanged("PriorityIcon");
+            }
+        }
+
 
         private string _Key;
 
@@ -120,6 +132,18 @@ namespace JIRA_Printer
             get { return _DueDate; }
             set { _DueDate = value;
                 OnPropertyChanged("DueDate");
+            }
+        }
+
+        private string _Priority;
+
+        public string Priority
+        {
+            get { return _Priority; }
+            set
+            {
+                _Priority = value;
+                OnPropertyChanged("Priority");
             }
         }
 
