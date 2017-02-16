@@ -327,21 +327,27 @@ namespace JIRA_Printer
                             {
                                 newissues++;
                             }
-
-                            Result.Add(new Ticket
+                            try
                             {
-                                Key = issue.key ?? "None",
-                                Component = "Not implemented",
-                                Summary = issue.fields.summary ?? "None",
-                                Status = issue.fields.status.name,
-                                IssueType = issue.fields.issuetype.name,
-                                IssueTypeIcon = issue.fields.issuetype.iconUrl,
-                                Created = DateTime.Parse(issue.fields.created).ToString("dd MMM yyyy HH:mm:ss"),
-                                //Source = issue,
-                                Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
-                                Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0,
-                                DueDate = DateTime.Parse(issue.fields.duedate).ToString("dd MMM yyyy") ?? "None"
-                            });
+                                Result.Add(new Ticket
+                                {
+                                    Key = issue.key ?? "None",
+                                    Component = "Not implemented",
+                                    Summary = issue.fields.summary ?? "None",
+                                    Status = issue.fields.status.name,
+                                    IssueType = issue.fields.issuetype.name,
+                                    IssueTypeIcon = issue.fields.issuetype.iconUrl,
+                                    Created = DateTime.Parse(issue.fields.created).ToString("dd MMM yyyy HH:mm:ss"),
+                                    //Source = issue,
+                                    Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
+                                    Progress = issue.fields.progress != null && issue.fields.progress.percent != null ? (int)(issue.fields.progress.percent) : 0,
+                                    DueDate = DateTime.Parse(issue.fields.duedate).ToString("dd MMM yyyy") ?? "None"
+                                });
+                            }
+                            catch(Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
                         }
 
                         if (newissues > 0)
