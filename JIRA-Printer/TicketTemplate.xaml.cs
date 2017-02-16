@@ -41,18 +41,33 @@ namespace JIRA_Printer
                 //};
             }
         }
-        private BitmapImage sourceImage = new BitmapImage();
+        private BitmapImage issueTypeImage = new BitmapImage();
 
-        public BitmapImage SourceImage
+        public BitmapImage IssueTypeImage
         {
             get
             {
-                return sourceImage;
+                return issueTypeImage;
             }
             set
             {
-                sourceImage = value;
-                OnPropertyChanged("SourceImage");
+                issueTypeImage = value;
+                OnPropertyChanged("IssueTypeImage");
+            }
+        }
+
+        private BitmapImage priorityImage = new BitmapImage();
+
+        public BitmapImage PriorityImage
+        {
+            get
+            {
+                return priorityImage;
+            }
+            set
+            {
+                priorityImage = value;
+                OnPropertyChanged("PriorityImage");
             }
         }
 
@@ -91,10 +106,29 @@ namespace JIRA_Printer
                     }
                 }
             }
+            if (!File.Exists(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Priority)))
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    string authorization = "Basic " + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword)));
+                    wc.Headers.Add("Authorization", authorization);
+                    wc.DownloadFile(TheTicket.PriorityIcon, String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Priority));
+                    if (File.ReadAllText(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Priority)).StartsWith("<?xml")) // it's an SVG file
+                    {
+                        var svgDocument = SvgDocument.Open(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Priority));
+                        var bitmap = svgDocument.Draw(48, 48);
+                        bitmap.Save(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Priority), ImageFormat.Png);
+                    }
+                }
+            }
 
-            SourceImage.BeginInit();
-            SourceImage.UriSource = new Uri(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType), UriKind.Absolute);
-            SourceImage.EndInit();
+            IssueTypeImage.BeginInit();
+            IssueTypeImage.UriSource = new Uri(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.IssueType), UriKind.Absolute);
+            IssueTypeImage.EndInit();
+
+            PriorityImage.BeginInit();
+            PriorityImage.UriSource = new Uri(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Priority), UriKind.Absolute);
+            PriorityImage.EndInit();
 
             ExportToPng(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key), MainCanvas);
             //File.Delete(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), TheTicket.Key + TheTicket.IssueType));

@@ -43,6 +43,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Key" Binding="{Binding Path=Key}" />
                 <DataGridTextColumn Header="Issue Type" Binding="{Binding Path=IssueType}" />
+                <DataGridTextColumn Header="Priority" Binding="{Binding Path=Priority}" />
                 <DataGridTextColumn Header="Created" Binding="{Binding Path=Created}" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" />
                 <DataGridTextColumn Header="Assignee" Binding="{Binding Path=Assignee}" />
