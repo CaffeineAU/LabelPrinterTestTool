@@ -277,7 +277,8 @@ namespace JIRA_Printer
             double issuetimeperiod = Math.Max((DateTime.Now - Properties.Settings.Default.LastPrintTime).TotalMinutes, 1);
 
 
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND created>=-{5:F0}m)&startAt=0&maxResults={4}&fields={3}",
+            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND (labels not in (Printed) OR labels is EMPTY))&startAt=0&maxResults={4}&fields={3} ",
+                //http://jirapd.corp.resmed.org/issues/?jql=project%20%3D%20MTE%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened%2C%20%22To%20Do%22%2C%20%22More%20Information%20Required%22%2C%20%22%20Verification%22%2C%20Planning%2C%20%22In%20Triage%22)%20AND%20(labels%20not%20in%20(Printed)%20OR%20labels%20is%20EMPTY)
                 Properties.Settings.Default.JIRA_API,
                 project,
                 str_status,
@@ -316,6 +317,7 @@ namespace JIRA_Printer
                         d = Json.Decode(responseString);
 
                         int newissues = 0;
+                        string lastissuekey = "";
 
                         foreach (var issue in d.issues)
                         {
@@ -350,23 +352,42 @@ namespace JIRA_Printer
                             {
                                 MessageBox.Show(ex.Message);
                             }
+                            lastissuekey = issue.key;
                         }
 
-                        if (newissues > 0)
+                        if (newissues > 1)
                         {
                             JiraBalloon balloon = new JiraBalloon();
                             balloon.MouseDown += delegate { WindowState = WindowState.Normal; Activate(); };
-                            balloon.BalloonText = "JIRA Issues Created";
-                            balloon.BalloonContent = String.Format("{0} issue{1} Created", newissues, newissues == 1? "":"s");
+                            balloon.BalloonText = "JIRA Issues Printed";
+                            balloon.BalloonContent = String.Format("{0} issue{1} printed", newissues, newissues == 1 ? "" : "s");
 
                             //show balloon and close it after 4 seconds
                             myNotifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
 
                             //if (WindowState == WindowState.Normal)
                             //{
-                                dataGrid.Focus();
+                            dataGrid.Focus();
                             //}
-                            
+                            PrintListOfIssues();
+
+                        }
+
+                        if (newissues == 1)
+                        {
+                            JiraBalloon balloon = new JiraBalloon();
+                            balloon.MouseDown += delegate { WindowState = WindowState.Normal; Activate(); };
+                            balloon.BalloonText = "JIRA Issue Printed";
+                            balloon.BalloonContent = String.Format("Issue {0} printed", lastissuekey);
+
+                            //show balloon and close it after 4 seconds
+                            myNotifyIcon.ShowCustomBalloon(balloon, PopupAnimation.Slide, 4000);
+
+                            //if (WindowState == WindowState.Normal)
+                            //{
+                            dataGrid.Focus();
+                            //}
+                            PrintListOfIssues();
 
                         }
 
@@ -399,6 +420,12 @@ namespace JIRA_Printer
 
         private void PrintIssuesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            PrintListOfIssues();
+
+        }
+
+        private void PrintListOfIssues()
+        {
             foreach (var issue in Result)
             {
                 TicketTemplate tt = new TicketTemplate { TheTicket = issue };
@@ -416,6 +443,23 @@ namespace JIRA_Printer
                     //System.Diagnostics.Process.Start(String.Format("{0}{1}.png", System.IO.Path.GetTempPath(), issue.Key));
 
                     tt.Close();
+
+                    HttpClient client = new HttpClient();
+
+                    //Putting URI in client base address.
+                    client.BaseAddress = new Uri(Properties.Settings.Default.JIRA_API);
+
+                    //Putting credentials in Authorization headers.
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword))));
+
+                    //Putting content-type into the Header.
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    string data = @"{""update"":{""labels"":[{""add"":""Printed""}]}}";
+
+                    var content = new StringContent(data, Encoding.UTF8, "application/json");
+
+                    System.Net.Http.HttpResponseMessage response = client.PutAsync(String.Format("issue/{0}", issue.Key), content).Result;
                 };
 
                 // Create
@@ -424,8 +468,9 @@ namespace JIRA_Printer
             Properties.Settings.Default.LastPrintTime = DateTime.Now;
             Properties.Settings.Default.Save();
             Result.Clear();
-
         }
+
+
 
         private void myNotifyIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)
         {
