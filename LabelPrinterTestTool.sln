@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JIRA-Printer", "JIRA-Printe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SENOR-LIB", "SENOR-LIB\SENOR-LIB.csproj", "{C1E2DDE0-A5E3-4FA0-AB61-F4181465903F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationMapper", "DocumentationMapper\DocumentationMapper.csproj", "{79FB428A-9E05-463A-99CB-E7CF5B082715}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C1E2DDE0-A5E3-4FA0-AB61-F4181465903F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1E2DDE0-A5E3-4FA0-AB61-F4181465903F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1E2DDE0-A5E3-4FA0-AB61-F4181465903F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
