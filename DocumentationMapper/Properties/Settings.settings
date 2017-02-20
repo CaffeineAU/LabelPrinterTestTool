@@ -2,13 +2,13 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DocumentationMapper.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="JIRA_API" Type="System.String" Scope="User">
+    <Setting Name="JIRA_API" Provider="PortableSettingsProvider" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://jirapd.corp.resmed.org/rest/api/2/</Value>
     </Setting>
-    <Setting Name="JIRAUsername" Type="System.String" Scope="User">
+    <Setting Name="JIRAUsername" Provider="PortableSettingsProvider" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">user</Value>
     </Setting>
-    <Setting Name="JIRAPassword" Type="System.String" Scope="User">
+    <Setting Name="JIRAPassword" Provider="PortableSettingsProvider" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">pass</Value>
     </Setting>
   </Settings>
