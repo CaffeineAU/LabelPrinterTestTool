@@ -88,11 +88,24 @@ namespace DocumentationMapper
 
         public override string ToString()
         {
-            string output = string.Format(@"""{0}""[label = ""<f0> {0}| <f1>{1}| <f3>{2} | <f4>{3}| <f5>{4}| <f6>{5}| <f7>{6}"" shape = ""record"" ];", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component);
+            //string output = string.Format(@"""{0}""[label = ""<f0> {0}| <f1>{1}| <f3>{2} | <f4>{3}| <f5>{4}| <f6>{5}| <f7>{6}"" shape = ""record"" ];", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component);
 
-            foreach(string parent_id in Dependencies)
+            string output = string.Format(@"
+
+            ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"">
+            <TR><TD ColSpan=""2"" PORT=""Title""><font point-size=""24"">{0}</font></TD></TR>
+            <TR><TD Align=""left"">Document Number:</TD><TD Align=""left"">{1}</TD></TR>
+            <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
+            <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
+            <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
+            <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
+            </TABLE>>];
+
+", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component);
+
+            foreach (string parent_id in Dependencies)
             {
-                output += string.Format(@"""{0}"":f0-> ""{1}"":f0[id = 0];", this.JIRA_KEY, parent_id);
+                output += string.Format(@"""{0}"":Title-> ""{1}"":Title;", this.JIRA_KEY, parent_id);
             }
             
 
@@ -122,11 +135,12 @@ namespace DocumentationMapper
         {
             //this is where we export the structure to a text file and then run the graph viz tool
 
-            string output = "";
+            string output = @"digraph G {
+                                graph[fontname = ""Segoe UI""];
+                                node[fontname = ""Segoe UI""];
+                                edge[fontname = ""Segoe UI""];
+                                node[shape = plaintext]";
 
-            output += @"digraph g {graph[rankdir = ""LR""];";
-
-            output += @"node [fontsize = ""16"" shape = ""ellipse""]; ";
 
             foreach(MapNode mn in Nodes)
             {
