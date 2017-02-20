@@ -36,6 +36,8 @@ namespace DocumentationMapper
 
 
             GetDocs();
+
+            this.Close();
         }
         public static string Base64Encode(string plainText)
         {
@@ -50,11 +52,11 @@ namespace DocumentationMapper
             Properties.Settings.Default.Save();
 
             string project = "MTE";
-            int num_results = 10;
+            int num_results = 100;
 
             //string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
 
-            string[] IssueFields = new string[] { "key", "status", "duedate", "component", "assignee" };
+            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "component", "assignee" ,"issuelinks"};
 
             string str_fields = String.Join(", ", IssueFields);
 
@@ -78,6 +80,10 @@ namespace DocumentationMapper
             #endregion
 
             webRequest.Headers.Add("Authorization", authorization);
+
+
+
+            DocMap dm = new DocMap();
 
             dynamic d;
             try
@@ -103,6 +109,53 @@ namespace DocumentationMapper
                         {
                             Console.WriteLine(issue.key);
 
+                            
+
+                            string summary = issue.fields.summary ?? "DocNum DocName";
+
+                            int i_split = summary.IndexOf(" ");
+
+                            //hack 
+                            if(i_split <= 0) {
+                                summary += " " + summary;
+                                i_split = summary.IndexOf(" ");
+                            }
+
+
+                            MapNode mn = new MapNode
+                            {
+                                JIRA_KEY = issue.key ?? "None",
+                                DocumentNumber = summary.Substring(0,i_split),
+                                DocumentName = summary.Remove(0, i_split),
+                                Component = issue.fields.component,
+                                Status = issue.fields.status.name,
+                                Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
+                                DueDate = DateTime.Parse(issue.fields.duedate ?? DateTime.Now.ToString()).ToString("dd MMM yyyy") ?? "None",
+                            };
+
+                            if(issue.key == "MTE-609")
+                            {
+                                int ttt = 0;
+
+                            }
+
+                                dynamic test = issue.fields.issuelinks;
+
+                                foreach (var link in test)
+                                {
+                                    if (link.outwardIssue != null )
+                                    {
+                                        mn.Dependencies.Add(link.outwardIssue.key);
+                                    }
+                                }
+
+                            
+
+
+
+                            dm.Nodes.Add(mn);
+
+
                             //for each issue, write a GraphViz node to the text file
                         }
                     }
@@ -112,6 +165,10 @@ namespace DocumentationMapper
             {
                 MessageBox.Show(ex.Message);
             }
+
+
+
+            dm.Export();
         }
 
     }
