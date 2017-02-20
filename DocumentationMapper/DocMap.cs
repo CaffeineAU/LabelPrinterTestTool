@@ -8,10 +8,21 @@ namespace DocumentationMapper
 {
     public class MapNode
     {
-        public MapNode(string jira_id, string doc_num, string doc_name, string status, string owner, List<string> dependencies)
-        {
+        public string Jira_ID { get; set; }
+        public string Doc_Num { get; set; }
+        public string Status { get; set; }
+        public string Owner { get; set; }
 
+        private List<string> dependencies = new List<string>();
+
+        public List<string> Dependencies
+        {
+            get { return dependencies; }
+            set { dependencies = value; }
         }
+
+
+
     }
 
 
