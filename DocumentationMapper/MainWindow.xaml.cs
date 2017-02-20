@@ -89,6 +89,8 @@ namespace DocumentationMapper
                         foreach (var issue in d.issues)
                         {
                             Console.WriteLine(issue.key);
+
+                            //for each issue, write a GraphViz node to the text file
                         }
                     }
                 }
