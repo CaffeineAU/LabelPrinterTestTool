@@ -133,12 +133,6 @@ namespace DocumentationMapper
                                 DueDate = DateTime.Parse(issue.fields.duedate ?? DateTime.Now.ToString()).ToString("dd MMM yyyy") ?? "None",
                             };
 
-                            if(issue.key == "MTE-609")
-                            {
-                                int ttt = 0;
-
-                            }
-
                                 dynamic test = issue.fields.issuelinks;
 
                                 foreach (var link in test)
@@ -146,6 +140,7 @@ namespace DocumentationMapper
                                     if (link.outwardIssue != null )
                                     {
                                         mn.Dependencies.Add(link.outwardIssue.key);
+                                    Console.WriteLine("Linked {0} to {1}", issue.key, link.outwardIssue.key);
                                     }
                                 }
 

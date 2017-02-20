@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -129,13 +130,6 @@ namespace DocumentationMapper
 
             foreach(MapNode mn in Nodes)
             {
-                
-
-                if(mn.JIRA_KEY == "MTE-465")
-                {
-                    mn.Dependencies.Add("MTE-609");
-                }
-
                 output += mn.ToString();
             }
 
@@ -143,11 +137,27 @@ namespace DocumentationMapper
 
             File.WriteAllText("output.gv",output);
 
-            System.Diagnostics.Process.Start(@"C:\bin\dot.exe", "-Tsvg output.gv -o DocMap.svg");
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"C:\bin\dot.exe";
+            startInfo.Arguments = "-Tsvg output.gv -o DocMap.svg";
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+
+            Process processTemp = new Process();
+            processTemp.StartInfo = startInfo;
+            processTemp.EnableRaisingEvents = true;
+            try
+            {
+                processTemp.Start();
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
 
             System.Diagnostics.Process.Start(@"DocMap.svg");
-
-            int yyy = 0;
         }
 
 
