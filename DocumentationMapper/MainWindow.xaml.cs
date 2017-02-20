@@ -39,6 +39,7 @@ namespace DocumentationMapper
         private void GetDocs()
         {
 
+            Properties.Settings.Default.Save();
 
             string project = "MTE";
             int num_results = 1000;
@@ -50,12 +51,12 @@ namespace DocumentationMapper
             string str_fields = String.Join(", ", IssueFields);
 
 
-            string request = string.Format(@"{0}search?jql=(project={1} AND (status in ({2})) AND (labels not in (Printed) OR labels is EMPTY))&startAt=0&maxResults={4}&fields={3} ",
-                //http://jirapd.corp.resmed.org/issues/?jql=project%20%3D%20MTE%20AND%20status%20in%20(Open%2C%20%22In%20Progress%22%2C%20Reopened%2C%20%22To%20Do%22%2C%20%22More%20Information%20Required%22%2C%20%22%20Verification%22%2C%20Planning%2C%20%22In%20Triage%22)%20AND%20(labels%20not%20in%20(Printed)%20OR%20labels%20is%20EMPTY)
+            string request = string.Format(@"{0}search?jql=(project={1})&startAt=0&maxResults={2}&fields={3} ",
                 Properties.Settings.Default.JIRA_API,
                 project,
-                str_fields,
-                num_results);
+                num_results, 
+                str_fields
+                );
 
             Clipboard.SetText(request);
 
