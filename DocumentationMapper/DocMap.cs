@@ -141,6 +141,15 @@ namespace DocumentationMapper
                                 edge[fontname = ""Segoe UI""];
                                 node[shape = plaintext]";
 
+            Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
+
+            var results = from node in Nodes
+                          group node.Component by node.Component into componentgroup
+                          select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
+
+            // That should work, but all of the components are null....
+
+
 
             foreach(MapNode mn in Nodes)
             {
