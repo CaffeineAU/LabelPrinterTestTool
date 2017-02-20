@@ -93,7 +93,7 @@ namespace DocumentationMapper
             string output = string.Format(@"
 
             ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"">
-            <TR><TD ColSpan=""2"" PORT=""Title""><font point-size=""24"">{0}</font></TD></TR>
+            <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{0}</font></TD></TR>
             <TR><TD Align=""left"">Document Number:</TD><TD Align=""left"">{1}</TD></TR>
             <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
             <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
