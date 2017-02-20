@@ -32,6 +32,8 @@ namespace DocumentationMapper
         {
 
             Nodes = new List<MapNode>();
+
+            MapNode m = new MapNode { Jira_ID = "1234", Doc_Num = "4321", Dependencies = new List<string> { "hello", "is", "it", "me", "you're", "looking", "for?" } };
         }
 
         private List<MapNode> _Nodes;
