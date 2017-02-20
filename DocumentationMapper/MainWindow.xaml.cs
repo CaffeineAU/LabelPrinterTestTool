@@ -27,6 +27,14 @@ namespace DocumentationMapper
         {
             InitializeComponent();
 
+            if (Properties.Settings.Default.JIRAUsername == null)
+            {
+                Properties.Settings.Default.JIRAUsername ="Hello";
+                Properties.Settings.Default.Save();
+            }
+
+
+
             GetDocs();
         }
         public static string Base64Encode(string plainText)
@@ -42,7 +50,7 @@ namespace DocumentationMapper
             Properties.Settings.Default.Save();
 
             string project = "MTE";
-            int num_results = 1000;
+            int num_results = 10;
 
             //string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
 
