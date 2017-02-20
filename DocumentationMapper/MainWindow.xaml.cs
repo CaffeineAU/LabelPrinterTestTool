@@ -54,13 +54,13 @@ namespace DocumentationMapper
 
             //string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
 
-            string[] IssueFields = new string[] { };
+            string[] IssueFields = new string[] { "key", "status", "duedate", "component", "assignee" };
 
             string str_fields = String.Join(", ", IssueFields);
 
             //http://jirapd.corp.resmed.org/rest/api/2/search?jql=(project=MTE%20AND%20issuetype=%22Document%20Request%22)&startAt=0&maxResults=100&fields=key,status
 
-            // key,status,duedate,component,asignee
+            // 
 
             string request = string.Format(@"{0}search?jql=(project={1} AND issuetype='Document Request')&startAt=0&maxResults={2}&fields={3} ",
                 Properties.Settings.Default.JIRA_API,
