@@ -148,7 +148,7 @@ namespace DocumentationMapper
 
 
 
-                            dm.AddNode(mn);
+                            dm.Nodes.Add(mn);
 
 
                             //for each issue, write a GraphViz node to the text file
