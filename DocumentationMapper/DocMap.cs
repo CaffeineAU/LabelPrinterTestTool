@@ -96,6 +96,7 @@ namespace DocumentationMapper
             <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{0}</font></TD></TR>
             <TR><TD Align=""left"">Document Number:</TD><TD Align=""left"">{1}</TD></TR>
             <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
+            <TR><TD Align=""left"">Component</TD><TD Align=""left"">{6}</TD></TR>
             <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
             <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
             <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
@@ -144,7 +145,7 @@ namespace DocumentationMapper
             Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
 
             var results = from node in Nodes
-                          group node.Component by node.Component into componentgroup
+                          group node.JIRA_KEY by node.Component into componentgroup
                           select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
 
             // That should work, but all of the components are null....

@@ -56,13 +56,14 @@ namespace DocumentationMapper
 
             //string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
 
-            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "component", "assignee" ,"issuelinks"};
+            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "components", "assignee" ,"issuelinks"};
 
             string str_fields = String.Join(", ", IssueFields);
 
             //http://jirapd.corp.resmed.org/rest/api/2/search?jql=(project=MTE%20AND%20issuetype=%22Document%20Request%22)&startAt=0&maxResults=100&fields=key,status
 
             // 
+
 
             string request = string.Format(@"{0}search?jql=(project={1} AND issuetype='Document Request')&startAt=0&maxResults={2}&fields={3} ",
                 Properties.Settings.Default.JIRA_API,
@@ -74,6 +75,8 @@ namespace DocumentationMapper
             Clipboard.SetText(request);
 
             var webRequest = WebRequest.Create(request);
+
+
 
             #region
             string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
@@ -127,7 +130,7 @@ namespace DocumentationMapper
                                 JIRA_KEY = issue.key ?? "None",
                                 DocumentNumber = summary.Substring(0,i_split),
                                 DocumentName = summary.Remove(0, i_split),
-                                Component = issue.fields.component,
+                                Component = issue.fields.components[0].name ?? "None",
                                 Status = issue.fields.status.name,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = DateTime.Parse(issue.fields.duedate ?? DateTime.Now.ToString()).ToString("dd MMM yyyy") ?? "None",
