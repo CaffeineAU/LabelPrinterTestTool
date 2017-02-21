@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DocumentationMapper
@@ -145,19 +146,40 @@ namespace DocumentationMapper
             Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
 
             var results = from node in Nodes
-                          group node.JIRA_KEY by node.Component into componentgroup
+                          group node by node.Component into componentgroup
                           select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
 
             // That should work, but all of the components are null....
 
-
-
-            foreach(MapNode mn in Nodes)
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            foreach (var component in results)
             {
-                output += mn.ToString();
+                
+                output += String.Format(@" subgraph cluster_{0} {{
+                    style = filled;
+                    color = lightgrey;
+                    node[style = filled, color = white];
+                    label =""{1}"";", i++, component.component);
+
+                foreach (var node in component.nodes)
+                {
+                    //output += string.Format(@" ""{0}""-> ", node.JIRA_KEY);
+                    output += node.ToString();
+                }
+
+                output += string.Format("{0};}}", i);
+
             }
 
+            /*foreach (MapNode mn in Nodes)
+            {
+                output += mn.ToString();
+            }*/
+
             output += "}";
+
+            System.Windows.Clipboard.SetText(output);
 
             File.WriteAllText("output.gv",output);
 
@@ -180,6 +202,8 @@ namespace DocumentationMapper
             {
                 throw;
             }
+
+            Thread.Sleep(3000);
 
             System.Diagnostics.Process.Start(@"DocMap.svg");
         }
