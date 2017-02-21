@@ -83,7 +83,7 @@ namespace DocumentationMapper
 
 
 
-        
+
 
 
         public override string ToString()
@@ -122,20 +122,6 @@ namespace DocumentationMapper
             Nodes = new List<MapNode>();
         }
 
-        private List<string> _clusters = new List<string>();
-
-        public void AddNode(MapNode mn)
-        {
-
-            Nodes.Add(mn);
-
-            if (!_clusters.Contains(mn.Component))
-            {
-                _clusters.Add(mn.Component);
-            }
-
-        }
-
         private List<MapNode> _Nodes;
 
         public List<MapNode> Nodes
@@ -155,30 +141,20 @@ namespace DocumentationMapper
                                 edge[fontname = ""Segoe UI""];
                                 node[shape = plaintext]";
 
-            foreach(string cluster_name in _clusters)
-            {
-                Console.WriteLine("cluster: " + cluster_name);
+            Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
 
-                //do a cluster output here
+            var results = from node in Nodes
+                          group node.Component by node.Component into componentgroup
+                          select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
 
-
-                foreach (MapNode mn in Nodes.Where(n => n.Component == cluster_name))
-                {
-                    Console.WriteLine(mn.JIRA_KEY);
+            // That should work, but all of the components are null....
 
 
-                    output += mn.ToString();
 
-                }
-
-                //close the cluster here
-
-            }
-
-            /*foreach (MapNode mn in Nodes)
+            foreach(MapNode mn in Nodes)
             {
                 output += mn.ToString();
-            }*/
+            }
 
             output += "}";
 
