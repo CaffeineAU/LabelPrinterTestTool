@@ -101,8 +101,7 @@ namespace DocumentationMapper
             <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
             <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
             <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
-            </TABLE>>];
-
+            </TABLE>>][tooltip = ""{0}""]
 ", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green");
 
             foreach (string parent_id in Dependencies)
@@ -141,6 +140,7 @@ namespace DocumentationMapper
                                 graph[fontname = ""Segoe UI""];
                                 node[fontname = ""Segoe UI""];
                                 edge[fontname = ""Segoe UI""];
+                                rankdir=""LR""
                                 node[shape = plaintext]");
 
             Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
@@ -157,15 +157,16 @@ namespace DocumentationMapper
                     style = filled;
                     color = lightgrey;
                     fontsize=40;
+                    tooltip=""{1}"";
                     label =""{1}"";", i++, component.component);
 
                 foreach (var node in component.nodes)
                 {
                     //output += string.Format(@" ""{0}""-> ", node.JIRA_KEY);
-                    output.AppendFormat(node.ToString());
+                    output.AppendFormat("{0}", node.ToString());
                 }
 
-                output.AppendFormat("}}");
+                output.AppendFormat(@"}}");
 
             }
 
