@@ -137,7 +137,7 @@ namespace DocumentationMapper
             //this is where we export the structure to a text file and then run the graph viz tool
 
             StringBuilder output = new StringBuilder(@"digraph G {
-                                graph[fontname = ""Segoe UI""];
+                                graph[fontname = ""Segoe UI"", pad=""0.5"", nodesep=""1"", ranksep=""2""];
                                 node[fontname = ""Segoe UI""];
                                 edge[fontname = ""Segoe UI""];
                                 rankdir=""LR""

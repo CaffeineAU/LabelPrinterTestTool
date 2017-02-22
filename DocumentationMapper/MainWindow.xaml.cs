@@ -56,7 +56,7 @@ namespace DocumentationMapper
 
             //string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
 
-            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "components", "assignee" ,"issuelinks"};
+            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "components", "assignee" ,"issuelinks", "labels"};
 
             string str_fields = String.Join(", ", IssueFields);
 
