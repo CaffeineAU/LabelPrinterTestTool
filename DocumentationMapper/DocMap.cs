@@ -141,7 +141,8 @@ namespace DocumentationMapper
                                 graph[fontname = ""Segoe UI""];
                                 node[fontname = ""Segoe UI""];
                                 edge[fontname = ""Segoe UI""];
-                                node[shape = plaintext]");
+                                node[shape = plaintext];
+                                rankdir = ""LR""");
 
             Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
 
@@ -157,6 +158,7 @@ namespace DocumentationMapper
                     style = filled;
                     color = lightgrey;
                     fontsize=40;
+                    rankdir = ""LR"";
                     label =""{1}"";", i++, component.component);
 
                 foreach (var node in component.nodes)
