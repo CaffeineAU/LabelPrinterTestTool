@@ -65,6 +65,14 @@ namespace DocumentationMapper
             set { _dependencies = value; }
         }
 
+        private List<string> _Labels;
+
+        public List<string> Labels
+        {
+            get { return _Labels; }
+            set { _Labels = value; }
+        }
+
         private string _duedate;
 
         public string DueDate
@@ -102,13 +110,13 @@ namespace DocumentationMapper
             <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
             <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
             </TABLE>>][tooltip = ""{0}""]
-", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green");
+", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green", Labels.Count > 0 ? Labels[0] : "None");
 
             foreach (string parent_id in Dependencies)
             {
-                output += string.Format(@"""{0}"":Title-> ""{1}"":Title;", this.JIRA_KEY, parent_id);
+                output += string.Format(@"""{0}"":Title-> ""{1}"":Title[label=""{0} to {1}""];", this.JIRA_KEY, parent_id);
             }
-            
+
 
             return output;
         }
@@ -140,25 +148,31 @@ namespace DocumentationMapper
                                 graph[fontname = ""Segoe UI"", pad=""0.5"", nodesep=""1"", ranksep=""2""];
                                 node[fontname = ""Segoe UI""];
                                 edge[fontname = ""Segoe UI""];
-                                rankdir=""LR""
-                                node[shape = plaintext]");
-
-            Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
+                                rankdir=""LR"";
+                                node[shape = plaintext]"
+                                );
 
             var results = from node in Nodes
                           group node by node.Component into componentgroup
                           select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
 
+            var resultslabel = from node in Nodes
+                               group node by node.Labels[0] into labelgroup
+                               select new { label = labelgroup.Key, nodes = labelgroup.ToList() };
+
+
             int i = 0;
             foreach (var component in results)
             {
-                
-                output.AppendFormat(@" subgraph cluster_{0} {{
+                output.AppendFormat(@" 
+
+                    subgraph cluster_{0} {{
                     style = filled;
                     color = lightgrey;
                     fontsize=40;
                     tooltip=""{1}"";
-                    label =""{1}"";", i++, component.component);
+                    label =""{1}"";
+                    ", i++, component.component);
 
                 foreach (var node in component.nodes)
                 {
@@ -168,6 +182,21 @@ namespace DocumentationMapper
 
                 output.AppendFormat(@"}}");
 
+            }
+
+            foreach (var item in resultslabel)
+            {
+                if (item.label != "None")
+                {
+                    output.AppendFormat(@"
+                        {{rank=same; ");
+                    foreach (var issue in item.nodes)
+                    {
+                        output.AppendFormat(@" ""{0}"";", issue.JIRA_KEY);
+                    }
+                    output.AppendFormat(@"}}");
+
+                }
             }
 
             output.AppendFormat("}}");

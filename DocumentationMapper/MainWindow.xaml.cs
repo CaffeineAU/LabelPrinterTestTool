@@ -29,7 +29,7 @@ namespace DocumentationMapper
 
             if (Properties.Settings.Default.JIRAUsername == null)
             {
-                Properties.Settings.Default.JIRAUsername ="Hello";
+                Properties.Settings.Default.JIRAUsername = "Hello";
                 Properties.Settings.Default.Save();
             }
 
@@ -56,7 +56,7 @@ namespace DocumentationMapper
 
             //string str_status = @"""" + String.Join(@""", """, IssueStatuses) + @"""";
 
-            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "components", "assignee" ,"issuelinks", "labels"};
+            string[] IssueFields = new string[] { "key", "summary", "status", "duedate", "components", "assignee", "issuelinks", "labels" };
 
             string str_fields = String.Join(", ", IssueFields);
 
@@ -68,7 +68,7 @@ namespace DocumentationMapper
             string request = string.Format(@"{0}search?jql=(project={1} AND issuetype='Document Request')&startAt=0&maxResults={2}&fields={3} ",
                 Properties.Settings.Default.JIRA_API,
                 project,
-                num_results, 
+                num_results,
                 str_fields
                 );
 
@@ -112,42 +112,54 @@ namespace DocumentationMapper
                         {
                             Console.WriteLine(issue.key);
 
-                            
+
 
                             string summary = issue.fields.summary ?? "DocNum DocName";
 
                             int i_split = summary.IndexOf(" ");
 
                             //hack 
-                            if(i_split <= 0) {
+                            if (i_split <= 0)
+                            {
                                 summary += " " + summary;
                                 i_split = summary.IndexOf(" ");
                             }
 
+                            dynamic labels = issue.fields.labels;
+                            List<String> issuelabels = new List<string>();
 
+                            foreach (var item in labels)
+                            {
+                                issuelabels.Add(item);
+                            }
+                            if (issuelabels.Count == 0)
+                            {
+                                issuelabels.Add("None");
+                            }
                             MapNode mn = new MapNode
                             {
                                 JIRA_KEY = issue.key ?? "None",
-                                DocumentNumber = summary.Substring(0,i_split),
+                                DocumentNumber = summary.Substring(0, i_split),
                                 DocumentName = summary.Remove(0, i_split),
                                 Component = issue.fields.components[0].name ?? "None",
                                 Status = issue.fields.status.name,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = DateTime.Parse(issue.fields.duedate ?? DateTime.Now.ToString()).ToString("dd MMM yyyy") ?? "None",
+                                Labels = issuelabels
                             };
 
-                                dynamic test = issue.fields.issuelinks;
+                            dynamic test = issue.fields.issuelinks;
 
-                                foreach (var link in test)
+                            foreach (var link in test)
+                            {
+                                if (link.outwardIssue != null)
                                 {
-                                    if (link.outwardIssue != null )
-                                    {
-                                        mn.Dependencies.Add(link.outwardIssue.key);
-                                        Console.WriteLine("Linked {0} to {1}", issue.key, link.outwardIssue.key);
-                                    }
+                                    mn.Dependencies.Add(link.outwardIssue.key);
+                                    Console.WriteLine("Linked {0} to {1}", issue.key, link.outwardIssue.key);
                                 }
+                            }
 
-                            
+
 
 
 
