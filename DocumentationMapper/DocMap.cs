@@ -93,7 +93,7 @@ namespace DocumentationMapper
 
             string output = string.Format(@"
 
-            ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"">
+            ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"" BGCOLOR=""{7}"">
             <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{0}</font></TD></TR>
             <TR><TD Align=""left"">Document Number:</TD><TD Align=""left"">{1}</TD></TR>
             <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
@@ -103,7 +103,7 @@ namespace DocumentationMapper
             <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
             </TABLE>>];
 
-", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component);
+", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green");
 
             foreach (string parent_id in Dependencies)
             {
@@ -137,11 +137,11 @@ namespace DocumentationMapper
         {
             //this is where we export the structure to a text file and then run the graph viz tool
 
-            string output = @"digraph G {
+            StringBuilder output = new StringBuilder(@"digraph G {
                                 graph[fontname = ""Segoe UI""];
                                 node[fontname = ""Segoe UI""];
                                 edge[fontname = ""Segoe UI""];
-                                node[shape = plaintext]";
+                                node[shape = plaintext]");
 
             Dictionary<String, List<MapNode>> groupedMapNodes = new Dictionary<string, List<MapNode>>();
 
@@ -149,39 +149,31 @@ namespace DocumentationMapper
                           group node by node.Component into componentgroup
                           select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
 
-            // That should work, but all of the components are null....
-
-            StringBuilder sb = new StringBuilder();
             int i = 0;
             foreach (var component in results)
             {
                 
-                output += String.Format(@" subgraph cluster_{0} {{
+                output.AppendFormat(@" subgraph cluster_{0} {{
                     style = filled;
                     color = lightgrey;
-                    node[style = filled, color = white];
+                    fontsize=40;
                     label =""{1}"";", i++, component.component);
 
                 foreach (var node in component.nodes)
                 {
                     //output += string.Format(@" ""{0}""-> ", node.JIRA_KEY);
-                    output += node.ToString();
+                    output.AppendFormat(node.ToString());
                 }
 
-                output += string.Format("{0};}}", i);
+                output.AppendFormat("}}");
 
             }
 
-            /*foreach (MapNode mn in Nodes)
-            {
-                output += mn.ToString();
-            }*/
+            output.AppendFormat("}}");
 
-            output += "}";
+            System.Windows.Clipboard.SetText(output.ToString());
 
-            System.Windows.Clipboard.SetText(output);
-
-            File.WriteAllText("output.gv",output);
+            File.WriteAllText("output.gv", output.ToString());
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = @"C:\bin\dot.exe";
@@ -196,6 +188,7 @@ namespace DocumentationMapper
             processTemp.EnableRaisingEvents = true;
             try
             {
+                File.Delete(@"DocMap.svg");
                 processTemp.Start();
             }
             catch (Exception e)
@@ -203,9 +196,17 @@ namespace DocumentationMapper
                 throw;
             }
 
-            Thread.Sleep(3000);
+            int timeout = 50;
 
-            System.Diagnostics.Process.Start(@"DocMap.svg");
+            while (!File.Exists(@"DocMap.svg") && timeout-- > 0)
+            {
+                Thread.Sleep(100);
+            }
+
+            if (File.Exists(@"DocMap.svg"))
+            {
+                System.Diagnostics.Process.Start(@"DocMap.svg");
+            }
         }
 
 

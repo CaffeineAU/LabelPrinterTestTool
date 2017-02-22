@@ -78,7 +78,7 @@ namespace DocumentationMapper
 
 
 
-            #region
+            #region Authorisation
             string authorization = "Basic " + Base64Encode(String.Format("{0}:{1}", Properties.Settings.Default.JIRAUsername, Properties.Settings.Default.JIRAPassword));
             #endregion
 
@@ -143,7 +143,7 @@ namespace DocumentationMapper
                                     if (link.outwardIssue != null )
                                     {
                                         mn.Dependencies.Add(link.outwardIssue.key);
-                                    Console.WriteLine("Linked {0} to {1}", issue.key, link.outwardIssue.key);
+                                        Console.WriteLine("Linked {0} to {1}", issue.key, link.outwardIssue.key);
                                     }
                                 }
 
