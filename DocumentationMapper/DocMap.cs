@@ -102,9 +102,10 @@ namespace DocumentationMapper
             string output = string.Format(@"
 
             ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"" BGCOLOR=""{7}"">
-            <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{0}</font></TD></TR>
-            <TR><TD Align=""left"">Document Number:</TD><TD Align=""left"">{1}</TD></TR>
+            <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{1}</font></TD></TR>
+            
             <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
+            <TR><TD Align=""left"">JIRA Ref</TD><TD Align=""left"">{0}</TD></TR>
             <TR><TD Align=""left"">Component</TD><TD Align=""left"">{6}</TD></TR>
             <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
             <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
