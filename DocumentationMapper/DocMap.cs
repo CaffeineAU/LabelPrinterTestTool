@@ -101,22 +101,22 @@ namespace DocumentationMapper
 
             string output = string.Format(@"
 
-            ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"" BGCOLOR=""{7}"">
-            <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{1}</font></TD></TR>
-            
-            <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
-            <TR><TD Align=""left"">JIRA Ref</TD><TD Align=""left"">{0}</TD></TR>
-            <TR><TD Align=""left"">Component</TD><TD Align=""left"">{6}</TD></TR>
-            <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
-            <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
-            <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
-            </TABLE>>][tooltip = ""{0}""]
-", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green", Labels.Count > 0 ? Labels[0] : "None");
+                        ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"" BGCOLOR=""{7}"">
+                        <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{1}</font></TD></TR>
 
-            foreach (string parent_id in Dependencies)
-            {
-                output += string.Format(@"""{0}"":Title-> ""{1}"":Title[label=""{0} to {1}""];", this.JIRA_KEY, parent_id);
-            }
+                        <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
+                        <TR><TD Align=""left"">JIRA Ref</TD><TD Align=""left"">{0}</TD></TR>
+                        <TR><TD Align=""left"">Component</TD><TD Align=""left"">{6}</TD></TR>
+                        <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
+                        <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
+                        <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
+                        </TABLE>>][tooltip = ""{0}""]
+            ", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green", Labels.Count > 0 ? Labels[0] : "None");
+
+            //string output = string.Format(@"""{0}""[label=""{1}""]", JIRA_KEY, Component);
+
+
+            
 
 
             return output;
@@ -177,15 +177,17 @@ namespace DocumentationMapper
 
                 foreach (var node in component.nodes)
                 {
-                    //output += string.Format(@" ""{0}""-> ", node.JIRA_KEY);
-                    output.AppendFormat("{0}", node.ToString());
+                    //output.AppendFormat(@" ""{0}""-> ", node.JIRA_KEY  + node.Component);
+                    output.AppendFormat(@"{0}", node.ToString());
                 }
+
+                //output.Append("0");
 
                 output.AppendFormat(@"}}");
 
             }
 
-            foreach (var item in resultslabel)
+            /*foreach (var item in resultslabel)
             {
                 if (item.label != "None")
                 {
@@ -197,6 +199,16 @@ namespace DocumentationMapper
                     }
                     output.AppendFormat(@"}}");
 
+                }
+            }*/
+
+            foreach (MapNode node in Nodes)
+            {
+
+
+                foreach (string parent_id in node.Dependencies)
+                {
+                    output.AppendFormat(@"""{0}""-> ""{1}"";", node.JIRA_KEY, parent_id); //[label=""{0} to {1}""]
                 }
             }
 
@@ -227,7 +239,7 @@ namespace DocumentationMapper
                 throw;
             }
 
-            int timeout = 50;
+            int timeout = 500;
 
             while (!File.Exists(@"DocMap.svg") && timeout-- > 0)
             {
