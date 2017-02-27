@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SENOR-LIB", "SENOR-LIB\SENO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationMapper", "DocumentationMapper\DocumentationMapper.csproj", "{79FB428A-9E05-463A-99CB-E7CF5B082715}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildReportGenerator", "BuildReportGenerator\BuildReportGenerator.csproj", "{C29EE4AF-AC58-4A5B-809F-96EBC3623FF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79FB428A-9E05-463A-99CB-E7CF5B082715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C29EE4AF-AC58-4A5B-809F-96EBC3623FF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C29EE4AF-AC58-4A5B-809F-96EBC3623FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C29EE4AF-AC58-4A5B-809F-96EBC3623FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C29EE4AF-AC58-4A5B-809F-96EBC3623FF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
