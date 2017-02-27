@@ -11,7 +11,6 @@ namespace DocumentationMapper
 {
     public class MapNode
     {
-
         public MapNode()
         {
             Dependencies = new List<string>();
@@ -89,34 +88,21 @@ namespace DocumentationMapper
             set { _component = value; }
         }
 
-
-
-
-
-
-
         public override string ToString()
         {
-            //string output = string.Format(@"""{0}""[label = ""<f0> {0}| <f1>{1}| <f3>{2} | <f4>{3}| <f5>{4}| <f6>{5}| <f7>{6}"" shape = ""record"" ];", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component);
-
             string output = string.Format(@"
 
-            ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"" BGCOLOR=""{7}"">
-            <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{0}</font></TD></TR>
-            <TR><TD Align=""left"">Document Number:</TD><TD Align=""left"">{1}</TD></TR>
-            <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
-            <TR><TD Align=""left"">Component</TD><TD Align=""left"">{6}</TD></TR>
-            <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
-            <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
-            <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
-            </TABLE>>][tooltip = ""{0}""]
-", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green", Labels.Count > 0 ? Labels[0] : "None");
+                        ""{0}"" [label=<<TABLE BORDER=""1"" CELLBORDER=""0"" CELLSPACING=""0"" BGCOLOR=""{7}"">
+                        <TR><TD ColSpan=""2"" PORT=""Title"" HREF=""http://jirapd.corp.resmed.org/browse/{0}""><font color=""blue"" point-size=""24"">{1}</font></TD></TR>
 
-            foreach (string parent_id in Dependencies)
-            {
-                output += string.Format(@"""{0}"":Title-> ""{1}"":Title[label=""{0} to {1}""];", this.JIRA_KEY, parent_id);
-            }
-
+                        <TR><TD Align=""left"">Document Title</TD><TD Align=""left"">{2}</TD></TR>
+                        <TR><TD Align=""left"">JIRA Ref</TD><TD Align=""left"">{0}</TD></TR>
+                        <TR><TD Align=""left"">Component</TD><TD Align=""left"">{6}</TD></TR>
+                        <TR><TD Align=""left"">Status</TD><TD Align=""left"">{3}</TD></TR>
+                        <TR><TD Align=""left"">Assignee</TD><TD Align=""left"">{4}</TD></TR>
+                        <TR><TD Align=""left"">Due Date</TD><TD Align=""left"">{5}</TD></TR>
+                        </TABLE>>][tooltip = ""{0}""]
+            ", JIRA_KEY, DocumentNumber, DocumentName, Status, Assignee, DueDate, Component, Status == "Open" ? "White:Red" : Status == "In Progress" ? "White:Orange" : "White:Green");
 
             return output;
         }
@@ -156,14 +142,21 @@ namespace DocumentationMapper
                           group node by node.Component into componentgroup
                           select new { component = componentgroup.Key, nodes = componentgroup.ToList() };
 
-            var resultslabel = from node in Nodes
-                               group node by node.Labels[0] into labelgroup
-                               select new { label = labelgroup.Key, nodes = labelgroup.ToList() };
+            //var resultslabel = from node in Nodes
+            //                   group node by node.Labels[0] into labelgroup
+            //                   select new { label = labelgroup.Key, nodes = labelgroup.ToList() };
 
 
             int i = 0;
+
             foreach (var component in results)
             {
+                int step = 4;
+                int nodesperrow = 10;
+                int nodewidth = 6;
+
+                int x = 0;
+                int y = 0;
                 output.AppendFormat(@" 
 
                     subgraph cluster_{0} {{
@@ -172,19 +165,23 @@ namespace DocumentationMapper
                     fontsize=40;
                     tooltip=""{1}"";
                     label =""{1}"";
-                    ", i++, component.component);
+                    ", i += step, component.component);
 
                 foreach (var node in component.nodes)
                 {
-                    //output += string.Format(@" ""{0}""-> ", node.JIRA_KEY);
-                    output.AppendFormat("{0}", node.ToString());
+                    y = component.nodes.Last() == node ? (i - 1) + ((x / nodesperrow) * step)+1 : (i - 1) + ((x / nodesperrow) * step); // kick the last node up 1 notch, so that the cluster shows the title better
+                    output.AppendFormat(@"{0}[pos = ""{1},{2}!""]", node.ToString(), (x % nodesperrow) * ( component.nodes.Count == 2 ? nodewidth *3: nodewidth), y); // if there's only 2 nodes in the cluster, stretch them out a bit to fit the cluster title in the middle
+                    Console.WriteLine("Comp : {0}, x {1}, y{2}", node.Component + node.DocumentName, (x % nodesperrow) * nodewidth, y);
+                    x++;
                 }
+
+                i += (x - 1) / nodesperrow > 0 ? step : 0; // did we have a second line of nodes? if so then move the 'y' value another step
 
                 output.AppendFormat(@"}}");
 
             }
 
-            foreach (var item in resultslabel)
+            /*foreach (var item in resultslabel)
             {
                 if (item.label != "None")
                 {
@@ -197,6 +194,14 @@ namespace DocumentationMapper
                     output.AppendFormat(@"}}");
 
                 }
+            }*/
+
+            foreach (MapNode node in Nodes)
+            {
+                foreach (string parent_id in node.Dependencies)
+                {
+                    output.AppendFormat(@"""{0}""-> ""{1}"";", node.JIRA_KEY, parent_id); //[label=""{0} to {1}""]
+                }
             }
 
             output.AppendFormat("}}");
@@ -206,7 +211,7 @@ namespace DocumentationMapper
             File.WriteAllText("output.gv", output.ToString());
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = @"C:\bin\dot.exe";
+            startInfo.FileName = @"C:\bin\neato.exe";
             startInfo.Arguments = "-Tsvg output.gv -o DocMap.svg";
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
@@ -226,7 +231,7 @@ namespace DocumentationMapper
                 throw;
             }
 
-            int timeout = 50;
+            int timeout = 500;
 
             while (!File.Exists(@"DocMap.svg") && timeout-- > 0)
             {
@@ -238,9 +243,5 @@ namespace DocumentationMapper
                 System.Diagnostics.Process.Start(@"DocMap.svg");
             }
         }
-
-
-
-
     }
 }

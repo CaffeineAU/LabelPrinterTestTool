@@ -107,6 +107,7 @@ namespace DocumentationMapper
                         responseString = responseString.Replace("16x16", "_16x16");
 
                         d = Json.Decode(responseString);
+                        int index = 0;
 
                         foreach (var issue in d.issues)
                         {
@@ -116,13 +117,12 @@ namespace DocumentationMapper
 
                             string summary = issue.fields.summary ?? "DocNum DocName";
 
-                            int i_split = summary.IndexOf(" ");
+                            List<string> split = summary.Split(':').ToList();
 
                             //hack 
-                            if (i_split <= 0)
+                            while (split.Count <2 )
                             {
-                                summary += " " + summary;
-                                i_split = summary.IndexOf(" ");
+                                split.Insert(0, "No Doc #");
                             }
 
                             dynamic labels = issue.fields.labels;
@@ -139,13 +139,14 @@ namespace DocumentationMapper
                             MapNode mn = new MapNode
                             {
                                 JIRA_KEY = issue.key ?? "None",
-                                DocumentNumber = summary.Substring(0, i_split),
-                                DocumentName = summary.Remove(0, i_split),
+                                DocumentNumber = split[0],
+                                DocumentName = split[1],
                                 Component = issue.fields.components[0].name ?? "None",
                                 Status = issue.fields.status.name,
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = DateTime.Parse(issue.fields.duedate ?? DateTime.Now.ToString()).ToString("dd MMM yyyy") ?? "None",
-                                Labels = issuelabels
+                                Labels = issuelabels,
+                                Index = index++                                
                             };
 
                             dynamic test = issue.fields.issuelinks;
