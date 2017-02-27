@@ -146,7 +146,6 @@ namespace DocumentationMapper
                                 Assignee = issue.fields.assignee != null ? issue.fields.assignee.displayName ?? "None" : "None",
                                 DueDate = DateTime.Parse(issue.fields.duedate ?? DateTime.Now.ToString()).ToString("dd MMM yyyy") ?? "None",
                                 Labels = issuelabels,
-                                Index = index++                                
                             };
 
                             dynamic test = issue.fields.issuelinks;
